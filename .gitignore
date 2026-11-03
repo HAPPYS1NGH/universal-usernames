@@ -27,6 +27,7 @@ contracts/cache/
 contracts/out/
 contracts/broadcast/*/31337/
 contracts/lib/
+contracts/dependencies/
 
 # misc
 .DS_Store

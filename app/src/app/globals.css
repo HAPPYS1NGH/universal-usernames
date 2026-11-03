@@ -2,33 +2,87 @@
 
 @theme {
   --font-sans: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
-  --: var(--font-geist-mono), ui-monospace, monospace;
+  --font-mono: var(--font-geist-mono), ui-monospace, monospace;
 
-  --color-canvas: #f4f4f1;
-  --color-surface: #ffffff;
-  --color-ink: #0b0c0e;
-  --color-muted: #5c5f66;
-  --color-line: #e2e2dd;
-  --color-up: #0a7f45;
-  --color-up-soft: #e3f4ea;
-  --color-down: #c92a2a;
-  --color-down-soft: #fbe7e6;
+  /* Dark, mobile-wallet palette. Token names describe roles, so components
+     never reference raw colors. Surfaces step up in lightness as they layer. */
+  --color-backdrop: oklch(0.12 0.004 275);
+  --color-canvas: oklch(0.165 0.005 275);
+  --color-surface: oklch(0.225 0.006 275);
+  --color-raised: oklch(0.28 0.007 275);
+  --color-line: oklch(0.33 0.008 275);
+  --color-ink: oklch(0.97 0.002 275);
+  --color-muted: oklch(0.72 0.012 275);
+  --color-up: oklch(0.8 0.19 152);
+  --color-up-soft: oklch(0.3 0.07 152);
+  --color-down: oklch(0.7 0.19 25);
+  --color-down-soft: oklch(0.3 0.08 25);
+  --color-warn: oklch(0.82 0.15 80);
+
+  /* Width of the phone-sized app column. In rem, so it grows with the root
+     size on large screens (see html below). */
+  --container-app: 27rem;
 }
 
 html {
-  font-size: 18px;
+  font-size: 16px;
+  color-scheme: dark;
+  background: var(--color-backdrop);
+  font-synthesis: none;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  -webkit-text-size-adjust: 100%;
+  -webkit-tap-highlight-color: transparent;
+  overscroll-behavior: none;
+}
+
+/* Projector and desktop: scale the whole app up so it reads from the back of
+   the room. Everything is sized in rem, so the layout keeps its proportions. */
+@media (min-width: 64rem) and (min-height: 50rem) {
+  html {
+    font-size: 18px;
+  }
 }
 
 body {
-  background: var(--color-canvas);
+  background: var(--color-backdrop);
   color: var(--color-ink);
 }
 
+@layer base {
+  button,
+  a,
+  input,
+  label {
+    touch-action: manipulation;
+  }
+
+  button {
+    user-select: none;
+    -webkit-user-select: none;
+  }
+
+  button:not(:disabled),
+  [role="tab"] {
+    cursor: pointer;
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--color-ink);
+    outline-offset: 2px;
+  }
+
+  /* Keep autofilled fields on the dark theme instead of the browser's light
+     fill. Fields sit on the canvas color inside their wrappers. */
+  input:-webkit-autofill {
+    -webkit-text-fill-color: var(--color-ink);
+    caret-color: var(--color-ink);
+    box-shadow: 0 0 0 100vmax var(--color-canvas) inset;
+  }
+}
+
 ::selection {
-  background: var(--color-ink);
-  color: var(--color-surface);
+  background: oklch(0.97 0.002 275 / 0.25);
 }
 
 @keyframes countdown {

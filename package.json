@@ -1,0 +1,8 @@
+{
+  "name": "universal-usernames-demo",
+  "private": true,
+  "packageManager": "pnpm@11.1.3",
+  "engines": {
+    "node": ">=22"
+  }
+}

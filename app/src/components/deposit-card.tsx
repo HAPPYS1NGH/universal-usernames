@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { formatWeiAsEth } from "@/lib/money";
 import { CopyButton } from "./copy-button";
+import { ArrowDownIcon, ArrowUpRightIcon } from "./icons";
 
 const POLL_INTERVAL_MS = 10_000;
 
@@ -74,43 +75,58 @@ export function DepositCard({ address }: { address: string }) {
   const recentDeposit = balance.lastDeposit && now - balance.lastDeposit.at < 60_000 ? balance.lastDeposit : null;
 
   return (
-    <section className="overflow-hidden rounded-3xl bg-surface ring-1 ring-line">
-      <div className="p-8 sm:p-10">
-        <h2 className="text-2xl font-semibold tracking-tight">Deposit ETH</h2>
-        <p className="mt-2 text-lg text-muted">Send ETH on Ethereum mainnet to this address.</p>
-        <div className="mt-6 flex flex-col items-start gap-4 rounded-2xl bg-canvas p-5 ring-1 ring-line lg:flex-row lg:items-center lg:justify-between">
-          <code className="min-w-0 font-mono text-xl leading-snug break-all lg:text-2xl">{address}</code>
+    <section
+      aria-labelledby="deposit-heading"
+      className="overflow-hidden rounded-[1.75rem] bg-surface ring-1 ring-line"
+    >
+      <div className="p-4">
+        <div className="flex items-center gap-3">
+          <span className="grid size-12 shrink-0 place-items-center rounded-full bg-raised">
+            <ArrowDownIcon className="size-6" />
+          </span>
+          <div>
+            <h2 id="deposit-heading" className="text-xl font-semibold tracking-tight">
+              Deposit ETH
+            </h2>
+            <p className="text-muted">Send ETH on Ethereum mainnet to this address.</p>
+          </div>
+        </div>
+        <div className="mt-4 rounded-xl bg-canvas p-4 ring-1 ring-line">
+          <code className="block font-mono text-xl leading-snug break-all">{address}</code>
+        </div>
+        <div className="mt-3 grid">
           <CopyButton value={address} label="Copy address" />
         </div>
       </div>
 
       <div
         key={recentDeposit?.at}
-        className="border-t border-line p-8 sm:p-10"
+        className="border-t border-line p-4"
         style={recentDeposit ? { animation: "flash-up 3s ease-out" } : undefined}
       >
-        <div className="flex flex-wrap items-baseline justify-between gap-4">
-          <p className="text-lg font-medium text-muted">Onchain balance</p>
+        <div className="flex items-center justify-between gap-4">
+          <p className="font-medium text-muted">Onchain balance</p>
           <a
             href={`https://etherscan.io/address/${address}`}
             target="_blank"
             rel="noreferrer"
-            className="text-muted underline decoration-line underline-offset-4 hover:text-ink"
+            className="-my-2 -mr-2 inline-flex h-11 items-center gap-1 rounded-lg px-2 font-medium text-muted transition-colors duration-150 ease-out hover:text-ink"
           >
             View on Etherscan
+            <ArrowUpRightIcon className="size-4" />
           </a>
         </div>
-        <p className="mt-2 text-6xl font-semibold tracking-tight tabular-nums sm:text-7xl">
+        <p className="mt-1 text-[2.75rem] leading-tight font-semibold tracking-tight tabular-nums">
           {balance.wei === null ? "–" : formatWeiAsEth(balance.wei)}
-          <span className="ml-4 text-3xl font-medium text-muted">ETH</span>
+          <span className="ml-2 text-2xl font-medium text-muted">ETH</span>
         </p>
         {recentDeposit && (
-          <p className="mt-4 inline-flex rounded-full bg-up-soft px-4 py-2 text-lg font-semibold text-up">
+          <p className="mt-3 inline-flex rounded-full bg-up-soft px-4 py-2 text-lg font-semibold text-up">
             +{formatWeiAsEth(recentDeposit.wei)} ETH received
           </p>
         )}
-        <p className="mt-6 flex items-center gap-3 text-muted" aria-live="polite">
-          <span className={`size-2.5 rounded-full ${balance.failed ? "bg-amber-500" : "animate-pulse bg-up"}`} />
+        <p className="mt-3 flex items-center gap-2.5 text-muted" aria-live="polite">
+          <span className={`size-2 rounded-full ${balance.failed ? "bg-warn" : "animate-pulse bg-up"}`} />
           {checking
             ? "Checking Ethereum…"
             : balance.failed
@@ -118,11 +134,11 @@ export function DepositCard({ address }: { address: string }) {
               : `Updated ${secondsAgo === 0 ? "just now" : `${secondsAgo}s ago`}`}
         </p>
       </div>
-      <div className="h-1.5 bg-canvas">
+      <div className="h-1 bg-canvas">
         {!checking && (
           <div
             key={balance.checkedAt}
-            className="h-full origin-left bg-ink/70"
+            className="h-full origin-left bg-muted/60"
             style={{ animation: `countdown ${POLL_INTERVAL_MS}ms linear forwards` }}
           />
         )}

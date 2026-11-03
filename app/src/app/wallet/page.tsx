@@ -21,16 +21,11 @@ export default async function WalletPage() {
   if (!portfolio || !address) throw new Error(`Wallet missing for user ${user.id}`);
 
   return (
-    <div className="flex flex-col gap-10">
-      <header>
-        <p className="text-xl font-medium text-muted">Wallet</p>
-        <h1 className="mt-1 text-5xl font-semibold tracking-tight">@{user.username}</h1>
-      </header>
+    <div className="flex flex-col gap-6">
+      <h1 className="pt-2 text-3xl font-semibold tracking-tight">Wallet</h1>
       <DepositCard address={address} />
-      <div className="grid items-start gap-8 lg:grid-cols-[26rem_1fr]">
-        <SendForm cashCents={portfolio.cashCents} brand={brandName()} />
-        <ActivityList entries={getRecentActivity(db, user.id)} />
-      </div>
+      <SendForm cashCents={portfolio.cashCents} brand={brandName()} />
+      <ActivityList entries={getRecentActivity(db, user.id)} />
     </div>
   );
 }

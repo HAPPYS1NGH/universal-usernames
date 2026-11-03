@@ -1,6 +1,8 @@
 import type { ActivityEntry } from "@/lib/activity/activity";
 import { formatEth, formatUsd } from "@/lib/money";
 import { formatTimeAgo } from "@/lib/time-ago";
+import { EthIcon } from "./icons";
+import { UserAvatar } from "./user-avatar";
 
 function describe(entry: ActivityEntry): { title: string; detail: string; amount: string; positive: boolean } {
   switch (entry.kind) {
@@ -32,23 +34,36 @@ function describe(entry: ActivityEntry): { title: string; detail: string; amount
 
 export function ActivityList({ entries }: { entries: ActivityEntry[] }) {
   return (
-    <section className="rounded-3xl bg-surface ring-1 ring-line">
-      <h2 className="px-8 pt-8 pb-4 text-2xl font-semibold tracking-tight">Activity</h2>
+    <section aria-labelledby="activity-heading">
+      <h2 id="activity-heading" className="text-xl font-semibold tracking-tight">
+        Activity
+      </h2>
       {entries.length === 0 ? (
-        <p className="px-8 pb-8 text-lg text-muted">No activity yet. Trades and transfers show up here.</p>
+        <p className="mt-3 rounded-[1.75rem] bg-surface p-4 text-muted">
+          No activity yet. Trades and transfers show up here.
+        </p>
       ) : (
-        <ul className="divide-y divide-line">
+        <ul className="mt-2">
           {entries.map((entry) => {
             const { title, detail, amount, positive } = describe(entry);
             return (
-              <li key={entry.id} className="flex items-center justify-between gap-6 px-8 py-5">
-                <div>
-                  <p className="text-lg font-medium">{title}</p>
+              <li key={entry.id} className="flex items-center gap-3 py-3">
+                {entry.kind === "trade" ? (
+                  <span className="grid size-11 shrink-0 place-items-center rounded-full bg-surface">
+                    <EthIcon className="size-6" />
+                  </span>
+                ) : (
+                  <UserAvatar username={entry.counterparty} />
+                )}
+                <div className="min-w-0 flex-1">
+                  <p className="font-semibold [overflow-wrap:anywhere]">{title}</p>
                   <p className="text-muted">
                     {detail} · {formatTimeAgo(entry.at)}
                   </p>
                 </div>
-                <p className={`text-xl tabular-nums ${positive ? "text-up" : "text-ink"}`}>{amount}</p>
+                <p className={`shrink-0 text-lg font-semibold tabular-nums ${positive ? "text-up" : "text-ink"}`}>
+                  {amount}
+                </p>
               </li>
             );
           })}

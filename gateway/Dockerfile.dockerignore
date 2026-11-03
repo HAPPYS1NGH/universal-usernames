@@ -1,0 +1,7 @@
+# Used by `docker build -f gateway/Dockerfile .`: send only what the image needs.
+*
+!package.json
+!pnpm-workspace.yaml
+!pnpm-lock.yaml
+!gateway/package.json
+!gateway/src/

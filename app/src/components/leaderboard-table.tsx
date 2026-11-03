@@ -1,5 +1,6 @@
 import { formatPercent, formatUsd } from "@/lib/money";
 import type { LeaderboardEntry } from "@/lib/portfolio/portfolio-queries";
+import { UserAvatar } from "./user-avatar";
 
 type LeaderboardTableProps = {
   entries: LeaderboardEntry[];
@@ -16,54 +17,49 @@ function pnlTone(percent: number | null): string {
 export function LeaderboardTable({ entries, currentUsername }: LeaderboardTableProps) {
   if (entries.length === 0) {
     return (
-      <p className="rounded-3xl bg-surface p-8 text-lg text-muted ring-1 ring-line">
+      <p className="rounded-[1.75rem] bg-surface p-4 text-lg text-muted">
         No traders yet. Create an account to take the top spot.
       </p>
     );
   }
 
   return (
-    <div className="overflow-x-auto rounded-3xl bg-surface ring-1 ring-line">
-      <table className="w-full text-left text-xl">
-        <thead>
-          <tr className="border-b border-line text-base text-muted">
-            <th scope="col" className="w-24 py-5 pl-8 font-medium">
-              Rank
-            </th>
-            <th scope="col" className="py-5 font-medium">
-              Trader
-            </th>
-            <th scope="col" className="py-5 text-right font-medium">
-              Portfolio value
-            </th>
-            <th scope="col" className="py-5 pr-8 text-right font-medium">
-              PnL
-            </th>
-          </tr>
-        </thead>
-        <tbody className="divide-y divide-line">
-          {entries.map((entry) => {
-            const isYou = entry.username === currentUsername;
-            return (
-              <tr key={entry.userId} className={isYou ? "bg-canvas" : undefined}>
-                <td className="py-5 pl-8 text-muted tabular-nums">{entry.rank}</td>
-                <td className="py-5 font-semibold">
-                  @{entry.username}
-                  {isYou && (
-                    <span className="ml-3 rounded-full bg-ink px-3 py-1 align-middle text-sm font-medium text-surface">
-                      You
-                    </span>
-                  )}
-                </td>
-                <td className="py-5 text-right tabular-nums">{formatUsd(entry.valueCents)}</td>
-                <td className={`py-5 pr-8 text-right font-semibold tabular-nums ${pnlTone(entry.pnlPercent)}`}>
-                  {formatPercent(entry.pnlPercent)}
-                </td>
-              </tr>
-            );
-          })}
-        </tbody>
-      </table>
-    </div>
+    <ol className="-mx-2 flex flex-col">
+      {entries.map((entry) => {
+        const isYou = entry.username === currentUsername;
+        return (
+          <li
+            key={entry.userId}
+            className={`flex items-center gap-3 rounded-2xl px-2 py-3 ${isYou ? "bg-surface ring-1 ring-line" : ""}`}
+          >
+            <span className="w-7 shrink-0 text-center text-lg font-semibold text-muted tabular-nums">
+              <span className="sr-only">Rank </span>
+              {entry.rank}
+            </span>
+            <UserAvatar username={entry.username} />
+            <div className="min-w-0 flex-1">
+              <p className="flex flex-wrap items-center gap-x-2 text-lg font-semibold">
+                <span className="[overflow-wrap:anywhere]">@{entry.username}</span>
+                {isYou && (
+                  <span className="shrink-0 rounded-full bg-ink px-2 py-0.5 text-xs font-semibold text-canvas">
+                    You
+                  </span>
+                )}
+              </p>
+            </div>
+            <div className="shrink-0 text-right tabular-nums">
+              <p className="text-lg font-semibold">
+                <span className="sr-only">Portfolio value </span>
+                {formatUsd(entry.valueCents)}
+              </p>
+              <p className={`font-semibold ${pnlTone(entry.pnlPercent)}`}>
+                <span className="sr-only">PnL </span>
+                {formatPercent(entry.pnlPercent)}
+              </p>
+            </div>
+          </li>
+        );
+      })}
+    </ol>
   );
 }

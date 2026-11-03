@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { AutoRefresh } from "@/components/auto-refresh";
+import { EthIcon } from "@/components/icons";
 import { LeaderboardTable } from "@/components/leaderboard-table";
 import { getSessionUser } from "@/lib/auth/session";
 import { brandName } from "@/lib/config";
@@ -18,16 +19,15 @@ export default async function LeaderboardPage() {
   const entries = getLeaderboard(getDb(), price.cents);
 
   return (
-    <div className="flex flex-col gap-10">
+    <div className="flex flex-col gap-5">
       <AutoRefresh intervalMs={REFRESH_MS} />
-      <header className="flex flex-wrap items-end justify-between gap-6">
-        <div>
-          <p className="text-xl font-medium text-muted">{brandName()}</p>
-          <h1 className="mt-1 text-5xl font-semibold tracking-tight">Leaderboard</h1>
-        </div>
-        <p className="text-lg text-muted">
-          Ranked by PnL, excluding transfers. ETH at{" "}
-          <span className="font-medium text-ink tabular-nums">{formatUsd(price.cents)}</span>
+      <header className="pt-2">
+        <h1 className="text-3xl font-semibold tracking-tight">Leaderboard</h1>
+        <p className="mt-1 text-muted text-pretty">Top {brandName()} traders, ranked by PnL excluding transfers.</p>
+        <p className="mt-3 inline-flex h-9 items-center gap-2 rounded-full bg-surface pr-4 pl-2.5">
+          <EthIcon className="size-5" />
+          <span className="font-medium">ETH</span>
+          <span className="tabular-nums">{formatUsd(price.cents)}</span>
         </p>
       </header>
       <LeaderboardTable entries={entries} currentUsername={user?.username ?? null} />

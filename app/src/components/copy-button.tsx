@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { CheckIcon, CopyIcon } from "./icons";
 
 export function CopyButton({ value, label = "Copy" }: { value: string; label?: string }) {
   const [state, setState] = useState<"idle" | "copied" | "failed">("idle");
@@ -21,8 +22,9 @@ export function CopyButton({ value, label = "Copy" }: { value: string; label?: s
     <button
       type="button"
       onClick={copy}
-      className="shrink-0 rounded-xl bg-ink px-5 py-3 font-semibold text-surface transition-colors hover:bg-ink/85"
+      className="inline-flex h-12 shrink-0 items-center justify-center gap-2 rounded-xl bg-raised pr-5 pl-4 font-semibold transition-[background-color,transform] duration-150 ease-out hover:bg-line active:scale-[0.96]"
     >
+      {state === "copied" ? <CheckIcon className="size-5 text-up" /> : <CopyIcon className="size-5" />}
       <span aria-live="polite">{state === "copied" ? "Copied" : state === "failed" ? "Copy failed" : label}</span>
     </button>
   );

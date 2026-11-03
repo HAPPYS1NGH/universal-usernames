@@ -10,9 +10,9 @@ type SubmitButtonProps = {
 };
 
 const TONE_CLASSES = {
-  ink: "bg-ink hover:bg-ink/85",
-  up: "bg-up hover:bg-up/90",
-  down: "bg-down hover:bg-down/90",
+  ink: "bg-ink enabled:hover:bg-ink/90",
+  up: "bg-up enabled:hover:bg-up/90",
+  down: "bg-down enabled:hover:bg-down/90",
 };
 
 export function SubmitButton({ children, pendingLabel, tone = "ink", disabled = false }: SubmitButtonProps) {
@@ -21,7 +21,7 @@ export function SubmitButton({ children, pendingLabel, tone = "ink", disabled = 
     <button
       type="submit"
       disabled={pending || disabled}
-      className={`rounded-2xl px-6 py-4 text-xl font-semibold text-surface transition-[background-color,transform] active:scale-[0.99] disabled:cursor-not-allowed disabled:opacity-50 ${TONE_CLASSES[tone]}`}
+      className={`h-14 rounded-xl px-6 text-lg font-semibold text-canvas transition-[background-color,color,transform] duration-150 ease-out enabled:active:scale-[0.96] disabled:cursor-not-allowed disabled:bg-raised disabled:text-muted ${TONE_CLASSES[tone]}`}
     >
       {pending ? pendingLabel : children}
     </button>

@@ -11,7 +11,9 @@
     "start": "node --env-file-if-exists=.env src/index.ts",
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
-    "fixture": "node scripts/export-fixture.ts"
+    "fixture": "node scripts/export-fixture.ts",
+    "check-name": "node scripts/check-name.ts",
+    "parent-setup": "node scripts/parent-setup.ts"
   },
   "dependencies": {
     "@hono/node-server": "^2.1.5",

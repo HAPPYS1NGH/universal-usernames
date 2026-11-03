@@ -1,0 +1,23 @@
+[profile.default]
+src = "src"
+test = "test"
+script = "script"
+out = "out"
+libs = ["dependencies"]
+solc_version = "0.8.28"
+optimizer = true
+optimizer_runs = 200
+remappings = ["forge-std/=dependencies/forge-std-1.17.0/src/"]
+# The fixture test reads a real gateway response from disk.
+fs_permissions = [{ access = "read", path = "./test/fixtures" }]
+
+# This code is read on screen: keep plain Solidity over small gas and size savings.
+[lint]
+exclude_lints = ["asm-keccak256", "unwrapped-modifier-logic"]
+
+# forge-std is only used by tests and scripts. Install it with `forge soldeer install`.
+[dependencies]
+forge-std = "1.17.0"
+
+[soldeer]
+remappings_generate = false

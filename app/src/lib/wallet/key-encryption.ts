@@ -29,8 +29,8 @@ export function encryptPrivateKey(privateKey: Hex, address: Address, key: Buffer
   };
 }
 
-// Not used by the app itself. It exists so the operator can recover funds
-// sent to embedded wallets.
+// Only the wallet:sweep script calls this, to recover funds. The web app
+// never decrypts keys.
 export function decryptPrivateKey(encrypted: EncryptedPrivateKey, address: Address, key: Buffer): Hex {
   const decipher = createDecipheriv(ALGORITHM, key, Buffer.from(encrypted.iv, "hex"));
   decipher.setAAD(addressAad(address));

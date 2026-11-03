@@ -33,3 +33,19 @@ export function getWalletAddress(db: Db, userId: number): Address | null {
   const row = db.prepare<[number], { address: Address }>("SELECT address FROM wallets WHERE user_id = ?").get(userId);
   return row?.address ?? null;
 }
+
+export type StoredEmbeddedWallet = { address: Address; encryptedKey: EncryptedPrivateKey };
+
+type StoredWalletRow = { address: Address; ciphertext: string; iv: string; authTag: string };
+
+export function getStoredWalletByUsername(db: Db, username: string): StoredEmbeddedWallet | null {
+  const row = db
+    .prepare<[string], StoredWalletRow>(
+      `SELECT w.address, w.key_ciphertext AS ciphertext, w.key_iv AS iv, w.key_auth_tag AS authTag
+       FROM wallets w JOIN users u ON u.id = w.user_id
+       WHERE u.username = ?`,
+    )
+    .get(username);
+  if (!row) return null;
+  return { address: row.address, encryptedKey: { ciphertext: row.ciphertext, iv: row.iv, authTag: row.authTag } };
+}

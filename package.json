@@ -8,6 +8,7 @@
   "scripts": {
     "dev": "pnpm --filter app dev",
     "db:seed": "pnpm --filter app db:seed",
+    "wallet:sweep": "pnpm --filter app wallet:sweep",
     "test": "pnpm --recursive test",
     "check": "pnpm --recursive lint && pnpm --recursive typecheck && pnpm --recursive test"
   }

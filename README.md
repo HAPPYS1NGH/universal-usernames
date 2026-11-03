@@ -66,6 +66,9 @@ Step 5 is the problem the rest of the workshop solves.
 | `pnpm test` | Run the unit tests |
 | `pnpm check` | Lint, typecheck and test |
 | `pnpm --filter app build` | Production build (`output: "standalone"`) |
+| `pnpm wallet:sweep <username> <toAddress> [--yes]` | Send a user's whole embedded-wallet balance on mainnet to `toAddress`. Prints a dry run unless you pass `--yes` |
+
+`wallet:sweep` decrypts a real private key and moves real mainnet ETH: run the dry run first and check the destination address.
 
 ### Next step: 01-adapter
 

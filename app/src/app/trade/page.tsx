@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { AutoRefresh } from "@/components/auto-refresh";
+import { HoldingsList } from "@/components/holdings-list";
 import { PortfolioSummary } from "@/components/portfolio-summary";
 import { PriceHeading } from "@/components/price-heading";
 import { TradePanel } from "@/components/trade-panel";
@@ -19,13 +20,15 @@ export default async function TradePage() {
   if (!portfolio) throw new Error(`Portfolio missing for user ${user.id}`);
 
   return (
-    <div className="flex flex-col gap-10">
+    <div className="flex flex-col gap-7">
       <AutoRefresh intervalMs={PRICE_REFRESH_MS} />
-      <PriceHeading price={price} />
-      <div className="grid items-start gap-8 lg:grid-cols-[1fr_28rem]">
-        <PortfolioSummary portfolio={portfolio} />
+      <h1 className="sr-only">Trade</h1>
+      <PortfolioSummary portfolio={portfolio} />
+      <section aria-label="Trade ETH" className="flex flex-col gap-5 rounded-[1.75rem] bg-surface p-4 ring-1 ring-line">
+        <PriceHeading price={price} />
         <TradePanel cashCents={portfolio.cashCents} ethGwei={portfolio.ethGwei} priceCents={price.cents} />
-      </div>
+      </section>
+      <HoldingsList portfolio={portfolio} />
     </div>
   );
 }

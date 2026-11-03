@@ -103,10 +103,47 @@ Why absolute: `server.js` switches to its own folder when it starts, so a relati
 
 The container runs as the `node` user (uid 1000), and the volume must be writable by it. The image has no tsx. The seed script is bundled as `scripts/seed.cjs` instead: run it inside the app container, like the `docker exec` line above.
 
-### Next step: 01-adapter
+## Step 01: the username adapter
+
+This step adds one public endpoint, `GET /api/ens/{label}`. Given a username, it returns the records ENS needs: the wallet address and a few text records. The CCIP-Read gateway in the next step calls it to answer queries for `happy.<brand>.eth`.
+
+The adapter is read-only and narrow on purpose. The gateway never touches the database. It only sees what this endpoint returns, and everything it returns ends up public through ENS anyway. Private keys, cash balances and trade history stay in the app. The app is still the system of record, and nothing about usernames goes onchain.
 
 ```sh
-git checkout 01-adapter
+curl -s http://localhost:3000/api/ens/hodl-queen
 ```
 
-It adds a small read-only API that exposes each username's wallet address and profile, which is what an ENS gateway needs to resolve `happy.<brand>.eth`.
+```json
+{
+  "name": "hodl-queen",
+  "address": "0xC4E135d0B6F041DFB342cf94E0C4123f7304cb5e",
+  "texts": {
+    "description": "Rank #1 on Tradepit · +25.6% PnL",
+    "url": "http://localhost:3000/u/hodl-queen",
+    "avatar": "http://localhost:3000/api/avatar/hodl-queen"
+  }
+}
+```
+
+Your seeded wallets have their own addresses, and PnL moves with the ETH price, so your output will differ.
+
+| Response | When |
+| --- | --- |
+| `200` with the body above, `Cache-Control: public, max-age=30` | The username exists |
+| `404 {"error":"not_found"}` | Valid label, no such user |
+| `400 {"error":"invalid_label"}` | The label breaks the username rules (3 to 20 characters, `a-z`, `0-9`, single inner hyphens, not reserved) |
+
+Two routes back the text records:
+
+- `GET /api/avatar/{label}` returns a generated SVG avatar. Colors come from a hash of the username, so they never change.
+- `/u/{username}` is a public profile page with rank, PnL, portfolio value and wallet address.
+
+Usernames on the leaderboard now link to their profile pages.
+
+### Next step: 02-gateway
+
+```sh
+git checkout 02-gateway
+```
+
+It adds the CCIP-Read gateway, which turns ENS queries into calls to this adapter and signs the answers.

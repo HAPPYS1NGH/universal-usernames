@@ -1,3 +1,10 @@
 packages:
   - app
   - gateway
+
+# pnpm blocks dependency build scripts unless they are listed here.
+# better-sqlite3 ships prebuilt N-API binaries, so its node-gyp build is not needed.
+allowBuilds:
+  better-sqlite3: false
+  esbuild: true
+  unrs-resolver: false

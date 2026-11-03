@@ -13,6 +13,7 @@ import { brandName } from "@/lib/config";
 import { getDb } from "@/lib/db/connection";
 import { getEthPrice } from "@/lib/market/eth-price";
 import { formatPercent, formatUsd } from "@/lib/money";
+import { ensNameFor } from "@/lib/profiles/ens-name";
 import { getPublicProfile } from "@/lib/profiles/public-profile";
 
 export async function generateMetadata({ params }: PageProps<"/u/[username]">): Promise<Metadata> {
@@ -30,6 +31,7 @@ export default async function ProfilePage({ params }: PageProps<"/u/[username]">
   const price = await getEthPrice();
   const profile = getPublicProfile(getDb(), username, price.cents);
   if (!profile) notFound();
+  const ensName = ensNameFor(profile.username);
   const isYou = (await getSessionUser())?.username === profile.username;
   const face = avatarFace(profile.username, profile.avatar);
 
@@ -55,6 +57,9 @@ export default async function ProfilePage({ params }: PageProps<"/u/[username]">
         <h1 className="mt-3 text-[1.625rem] leading-tight font-[750] tracking-[-0.03em] [overflow-wrap:anywhere]">
           @{profile.username}
         </h1>
+        {ensName && (
+          <p className="mt-0.5 text-[1.0625rem] font-semibold text-accent-ink [overflow-wrap:anywhere]">{ensName}</p>
+        )}
         <p className="mt-1 text-[0.9375rem] font-medium text-muted">Trader on {brandName()}</p>
       </header>
 

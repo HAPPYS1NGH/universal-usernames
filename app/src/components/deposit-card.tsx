@@ -37,11 +37,13 @@ async function fetchBalanceWei(): Promise<bigint> {
 
 type DepositCardProps = {
   address: string;
+  // Shown above the hex address when the app has an ENS parent name.
+  ensName: string | null;
   // Rendered on the server, so the QR encoder never ships to the browser.
   qr: ReactNode;
 };
 
-export function DepositCard({ address, qr }: DepositCardProps) {
+export function DepositCard({ address, ensName, qr }: DepositCardProps) {
   const [balance, setBalance] = useState(INITIAL_BALANCE);
   const [checking, setChecking] = useState(true);
   const [now, setNow] = useState(() => Date.now());
@@ -89,9 +91,25 @@ export function DepositCard({ address, qr }: DepositCardProps) {
           Deposit ETH
         </h2>
         <p className="mt-0.5 text-[0.9375rem] font-medium text-muted text-balance">
-          Send ETH on Ethereum mainnet to this address.
+          {ensName
+            ? "Send ETH from any ENS-aware wallet to this name."
+            : "Send ETH on Ethereum mainnet to this address."}
         </p>
-        <div className="mt-5">{qr}</div>
+        {ensName && (
+          <>
+            <div className="mt-4 w-full rounded-2xl bg-accent-soft/60 px-4 py-3.5">
+              <p className="text-[0.8125rem] font-semibold text-accent-ink">Your ENS name</p>
+              <p className="mt-0.5 text-[1.75rem] leading-tight font-[750] tracking-[-0.03em] [overflow-wrap:anywhere]">
+                {ensName}
+              </p>
+            </div>
+            <div className="mt-2.5 grid w-full">
+              <CopyButton value={ensName} label="Copy name" />
+            </div>
+            <p className="mt-6 text-[0.9375rem] font-medium text-muted">Or send on Ethereum mainnet to the address</p>
+          </>
+        )}
+        <div className={ensName ? "mt-4" : "mt-5"}>{qr}</div>
         <code className="mt-5 block max-w-[24ch] font-mono text-[1rem] leading-snug font-semibold break-all">
           {address}
         </code>

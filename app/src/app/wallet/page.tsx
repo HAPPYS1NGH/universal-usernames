@@ -10,6 +10,7 @@ import { brandName } from "@/lib/config";
 import { getDb } from "@/lib/db/connection";
 import { getEthPrice } from "@/lib/market/eth-price";
 import { getPortfolio } from "@/lib/portfolio/portfolio-queries";
+import { ensNameFor } from "@/lib/profiles/ens-name";
 import { getWalletAddress } from "@/lib/wallet/embedded-wallet";
 
 export const metadata: Metadata = { title: "Wallet" };
@@ -27,7 +28,7 @@ export default async function WalletPage() {
   return (
     <div className="flex flex-col gap-6">
       <h1 className="pt-2 text-[2rem] leading-tight font-[750] tracking-[-0.035em]">Wallet</h1>
-      <DepositCard address={address} qr={<AddressQr address={address} />} />
+      <DepositCard address={address} ensName={ensNameFor(user.username)} qr={<AddressQr address={address} />} />
       <SendForm cashCents={portfolio.cashCents} brand={brandName()} />
       <ActivityList entries={activity} avatars={getAvatarChoices(db, counterparties)} />
     </div>

@@ -2,6 +2,7 @@ import Link from "next/link";
 import type { AvatarChoice } from "@/lib/avatars/avatar-store";
 import { formatPercent, formatUsd } from "@/lib/money";
 import type { LeaderboardEntry } from "@/lib/portfolio/portfolio-queries";
+import { ensNameFor } from "@/lib/profiles/ens-name";
 import { pnlToneClass } from "./pnl-tone";
 import { UserAvatar } from "./user-avatar";
 
@@ -24,6 +25,7 @@ export function LeaderboardTable({ entries, currentUsername, avatars }: Leaderbo
     <ol className="divide-y divide-line overflow-hidden rounded-card bg-surface shadow-card">
       {entries.map((entry) => {
         const isYou = entry.username === currentUsername;
+        const ensName = ensNameFor(entry.username);
         return (
           <li
             key={entry.userId}
@@ -34,10 +36,12 @@ export function LeaderboardTable({ entries, currentUsername, avatars }: Leaderbo
               {entry.rank}
             </span>
             <UserAvatar username={entry.username} avatar={avatars.get(entry.username) ?? null} />
-            {/* The username spans both lines, centered beside value over PnL. PnL gets a track of its
-                own, so a second line on the left only has to clear the short PnL figure. */}
+            {/* The username spans both lines, centered beside value over PnL, unless there is an ENS
+                name. PnL gets a track of its own, so the ENS line only has to clear the short PnL figure. */}
             <div className="grid min-w-0 flex-1 grid-cols-[minmax(0,1fr)_auto_auto] items-baseline gap-x-3">
-              <p className="row-span-2 flex min-w-0 flex-wrap items-center gap-x-2 self-center text-[1.0625rem] font-semibold tracking-[-0.02em]">
+              <p
+                className={`flex min-w-0 flex-wrap items-center gap-x-2 self-center text-[1.0625rem] font-semibold tracking-[-0.02em] ${ensName ? "" : "row-span-2"}`}
+              >
                 {/* The link's ::after covers the row, so the whole row opens the profile. */}
                 <Link
                   href={`/u/${entry.username}`}
@@ -55,6 +59,11 @@ export function LeaderboardTable({ entries, currentUsername, avatars }: Leaderbo
                 <span className="sr-only">Portfolio value </span>
                 {formatUsd(entry.valueCents)}
               </p>
+              {ensName && (
+                <p className="col-span-2 min-w-0 text-[0.8125rem] font-medium text-muted [overflow-wrap:anywhere]">
+                  {ensName}
+                </p>
+              )}
               <p className={`col-start-3 text-right text-[0.875rem] font-semibold tabular-nums ${pnlToneClass(entry.pnlPercent)}`}>
                 <span className="sr-only">PnL </span>
                 {formatPercent(entry.pnlPercent)}

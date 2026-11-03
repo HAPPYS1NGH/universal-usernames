@@ -10,7 +10,8 @@
     "dev": "node --watch --env-file-if-exists=.env src/index.ts",
     "start": "node --env-file-if-exists=.env src/index.ts",
     "typecheck": "tsc --noEmit",
-    "test": "vitest run"
+    "test": "vitest run",
+    "fixture": "node scripts/export-fixture.ts"
   },
   "dependencies": {
     "@hono/node-server": "^2.1.5",

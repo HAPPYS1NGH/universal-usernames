@@ -1,6 +1,6 @@
 # Gateway
 
-A CCIP-Read gateway that makes every app username resolve as `<username>.<parent>.eth` on Ethereum mainnet. The app stays the system of record. The gateway reads it through the app's read-only adapter and signs each answer, and the resolver contract in [`../contracts`](../contracts) checks the signature.
+A CCIP-Read gateway that makes every app username resolve as `<username>.<parent>.eth` on Ethereum mainnet. The app stays the system of record. The gateway reads it through the app's read-only adapter and signs each answer. The resolver contract (`contracts/`, added in step `03-resolver`) checks the signature.
 
 ## What CCIP-Read is
 

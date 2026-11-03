@@ -11,3 +11,66 @@ Each branch is one step. Check out a branch and follow its README.
 | `02-gateway` | A CCIP-Read gateway that signs answers |
 | `03-resolver` | The resolver contract and the ENS setup on mainnet |
 | `main` | The finished demo |
+
+## Step 00: the app
+
+Tradepit is a small paper-trading app. You sign up with a username and get $10,000 of demo cash to trade ETH/USD at the live Coinbase price. Every account also gets an embedded wallet: a real Ethereum mainnet address whose private key the server generates and stores encrypted.
+
+### The problem: sealed usernames
+
+Inside the app you can send cash to `@happy`. Outside it, the name means nothing. MetaMask can't send to "happy", so to deposit ETH you copy a 42-character hex address from the wallet page. The username lives in one app's database, and nothing else can read it.
+
+### Prerequisites
+
+- Node.js 22 or newer
+- pnpm through Corepack (ships with Node)
+- OpenSSL, to generate the encryption key
+
+### Setup
+
+```sh
+corepack enable
+pnpm install
+cp app/.env.example app/.env
+openssl rand -hex 32   # paste the output into WALLET_ENCRYPTION_KEY in app/.env
+pnpm db:seed           # creates the SQLite database and 7 demo traders
+pnpm dev               # http://localhost:3000
+```
+
+The database is created on first use at `app/data/app.db`. It holds encrypted wallet keys, so it stays out of git, and so does `app/.env`. If you lose `WALLET_ENCRYPTION_KEY`, you lose access to any ETH sent to the embedded wallets.
+
+| Variable | Default | Purpose |
+| --- | --- | --- |
+| `BRAND_NAME` | `Tradepit` | App name shown in the UI |
+| `DATABASE_PATH` | `./data/app.db` | SQLite file, relative to `app/` |
+| `WALLET_ENCRYPTION_KEY` | none, required | 32-byte hex key for AES-256-GCM encryption of wallet keys |
+| `RPC_URL` | `https://ethereum-rpc.publicnode.com` | Ethereum mainnet RPC for deposit balances |
+| `APP_URL` | `http://localhost:3000` | Public URL of the app |
+
+### Demo script
+
+1. Open `/` and create an account, for example `happy`.
+2. On **Trade**, buy $1,000 of ETH. Portfolio value and PnL update with the price.
+3. Open **Leaderboard**. You're ranked by PnL, and transfers don't count toward it.
+4. On **Wallet**, send $25 to `@nora`. It works because both usernames live in this app.
+5. Still on **Wallet**, look at **Deposit ETH**. To fund this account from MetaMask you have to copy the hex address. Send a small amount on mainnet and watch the onchain balance update; it refreshes every 10 seconds.
+
+Step 5 is the problem the rest of the workshop solves.
+
+### Commands
+
+| Command | What it does |
+| --- | --- |
+| `pnpm dev` | Start the app in development mode |
+| `pnpm db:seed` | Create demo traders (skips ones that exist) |
+| `pnpm test` | Run the unit tests |
+| `pnpm check` | Lint, typecheck and test |
+| `pnpm --filter app build` | Production build (`output: "standalone"`) |
+
+### Next step: 01-adapter
+
+```sh
+git checkout 01-adapter
+```
+
+It adds a small read-only API that exposes each username's wallet address and profile, which is what an ENS gateway needs to resolve `happy.<brand>.eth`.

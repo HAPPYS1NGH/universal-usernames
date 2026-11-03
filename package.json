@@ -4,5 +4,11 @@
   "packageManager": "pnpm@11.1.3",
   "engines": {
     "node": ">=22"
+  },
+  "scripts": {
+    "dev": "pnpm --filter app dev",
+    "db:seed": "pnpm --filter app db:seed",
+    "test": "pnpm --recursive test",
+    "check": "pnpm --recursive lint && pnpm --recursive typecheck && pnpm --recursive test"
   }
 }

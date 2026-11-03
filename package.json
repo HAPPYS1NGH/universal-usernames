@@ -10,6 +10,8 @@
     "dev:gateway": "pnpm --filter gateway dev",
     "db:seed": "pnpm --filter app db:seed",
     "wallet:sweep": "pnpm --filter app wallet:sweep",
+    "parent-setup": "pnpm --filter gateway parent-setup",
+    "check-name": "pnpm --filter gateway check-name",
     "test": "pnpm --recursive test",
     "check": "pnpm --recursive lint && pnpm --recursive typecheck && pnpm --recursive test"
   }

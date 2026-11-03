@@ -190,3 +190,53 @@ git checkout 03-resolver
 ```
 
 It adds the resolver contract and the mainnet setup that points your parent name at this gateway.
+
+## Step 03: the resolver and the mainnet setup
+
+This step adds `contracts/OffchainResolver.sol`, an [ENSIP-10](https://docs.ens.domains/ensip/10) wildcard resolver. You set it once on your parent name. It sends wallets to the gateway with an `OffchainLookup` error and accepts an answer only if it hasn't expired and the gateway's signer signed it. That makes two onchain transactions for the whole app, and none per user.
+
+It works on ENSv1 and ENSv2. The resolver interface didn't change in ENSv2. What changes is which contract you call to set the resolver on the parent, and the `parent-setup` script works that out for you.
+
+### 1. Put the app and the gateway on HTTPS
+
+Wallets call the gateway from browsers, and some go through ENS's hosted batch gateway. Both need a public HTTPS URL. The gateway also needs to reach the app's `/api/ens/{label}`. [gateway/README.md](gateway/README.md#deploy) has the Docker setup.
+
+### 2. Deploy the resolver
+
+```sh
+cd contracts
+forge soldeer install
+cast wallet import deployer --interactive    # owner key, kept in a Foundry keystore
+cp .env.example .env                         # GATEWAY_URL, SIGNER_ADDRESS, MAINNET_RPC_URL
+forge script script/Deploy.s.sol --rpc-url mainnet                                  # dry run
+forge script script/Deploy.s.sol --rpc-url mainnet --account deployer --broadcast  # deploy
+```
+
+`GATEWAY_URL` is `https://<gateway host>/{sender}/{data}.json`, with the placeholders kept as they are.
+
+### 3. Point the parent name at it
+
+```sh
+MAINNET_RPC_URL=<rpc> pnpm parent-setup tradepit.eth <resolver address>
+```
+
+This read-only script works out whether the name is ENSv1 unwrapped, ENSv1 wrapped or ENSv2, and prints the exact `cast send` to run from the wallet that owns the name. You can also set a custom resolver in [app.ens.domains](https://app.ens.domains).
+
+> [!WARNING]
+> Migrating a name to ENSv2 clears its ENSv1 resolver. If you migrate later, set the resolver again in the migration or right after it.
+
+### 4. Check it
+
+```sh
+MAINNET_RPC_URL=<rpc> pnpm check-name happy.tradepit.eth
+```
+
+This resolves the name through the ENS Universal Resolver, the same way a wallet does, and prints the address and text records.
+
+### 5. Show the ENS name in the app
+
+Set `ENS_PARENT_NAME=tradepit.eth` in `app/.env` and restart the app. The wallet page now shows `happy.tradepit.eth` above the hex deposit address, and the leaderboard and profiles show each user's full name.
+
+Every new sign-up now has a working ENS name the moment its row is written.
+
+[contracts/README.md](contracts/README.md) has the details: Etherscan verification, every `setResolver` variant, why the resolver works on both ENS versions, and how to move the gateway or rotate the signer.

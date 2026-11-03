@@ -2,6 +2,8 @@
 // so `next build` works without a populated environment.
 
 const WALLET_KEY_PATTERN = /^[0-9a-f]{64}$/i;
+// Dot-separated labels without whitespace, e.g. "tradepit.eth".
+const ENS_NAME_PATTERN = /^[^\s.]+(\.[^\s.]+)+$/;
 
 export function brandName(): string {
   return process.env.BRAND_NAME?.trim() || "Tradepit";
@@ -31,4 +33,21 @@ export function walletEncryptionKey(): Buffer {
     );
   }
   return Buffer.from(hex, "hex");
+}
+
+// Optional parent ENS name whose resolver points at the gateway, e.g.
+// "tradepit.eth". When set, the UI shows usernames as <username>.<parent>.
+export function parseEnsParentName(raw: string | undefined): string | null {
+  const name = raw?.trim();
+  if (!name) return null;
+  if (name !== name.toLowerCase() || !ENS_NAME_PATTERN.test(name)) {
+    throw new Error(
+      `ENS_PARENT_NAME must be a lowercase ENS name with at least one dot and no spaces, like tradepit.eth. Got "${raw}".`,
+    );
+  }
+  return name;
+}
+
+export function ensParentName(): string | null {
+  return parseEnsParentName(process.env.ENS_PARENT_NAME);
 }

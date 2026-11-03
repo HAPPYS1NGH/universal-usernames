@@ -7,6 +7,7 @@
   },
   "scripts": {
     "dev": "pnpm --filter app dev",
+    "dev:gateway": "pnpm --filter gateway dev",
     "db:seed": "pnpm --filter app db:seed",
     "wallet:sweep": "pnpm --filter app wallet:sweep",
     "test": "pnpm --recursive test",

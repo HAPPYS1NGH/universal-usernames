@@ -147,3 +147,46 @@ git checkout 02-gateway
 ```
 
 It adds the CCIP-Read gateway, which turns ENS queries into calls to this adapter and signs the answers.
+
+## Step 02: the CCIP-Read gateway
+
+This step adds `gateway/`, a small server that answers ENS lookups for `<username>.<parent>.eth`. A wallet sends it the original `resolve(name, data)` call. The gateway checks the name, asks the adapter from step 01 for the profile, ABI-encodes the record the wallet asked for and signs it with an expiry. The resolver contract in step 03 accepts only answers signed by this key.
+
+The gateway never touches the database. It only knows what `/api/ens/{label}` returns.
+
+### Setup
+
+```sh
+pnpm install
+cp gateway/.env.example gateway/.env
+cast wallet new        # dedicated signer: put the private key in SIGNER_PRIVATE_KEY
+```
+
+Set `ENS_PARENT_NAME` to the name you own. Keep the signer address: the resolver needs it in step 03. The signer is not your deployer or owner key.
+
+### Run it next to the app
+
+```sh
+pnpm dev               # app on http://localhost:3000
+pnpm dev:gateway       # gateway on http://localhost:8080
+```
+
+### Try it
+
+Build the calldata a resolver would send for `addr(happy.tradepit.eth)` and ask the gateway:
+
+```sh
+DNS_NAME=0x$(printf '\005happy\010tradepit\003eth\000' | od -An -tx1 | tr -d ' \n')
+CALL=$(cast calldata "resolve(bytes,bytes)" $DNS_NAME $(cast calldata "addr(bytes32)" $(cast namehash happy.tradepit.eth)))
+curl -s http://localhost:8080/0x5615deb798bb3e4dfa0139dfa1b3d433cc23b72f/$CALL.json
+```
+
+The response is `{"data": abi.encode(result, expires, signature)}`. [gateway/README.md](gateway/README.md) explains the request flow, what each record returns, the error rules and how to deploy the gateway with Docker.
+
+### Next step: 03-resolver
+
+```sh
+git checkout 03-resolver
+```
+
+It adds the resolver contract and the mainnet setup that points your parent name at this gateway.

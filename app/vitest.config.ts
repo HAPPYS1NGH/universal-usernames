@@ -8,8 +8,7 @@ export default defineConfig({
   test: {
     include: ["tests/**/*.test.ts"],
     env: {
-      // Test-only key. Never use it for real wallets.
-      WALLET_ENCRYPTION_KEY: "00112233445566778899aabbccddeeff00112233445566778899aabbccddeeff",
+      // Route handlers use the shared connection; keep it in memory for tests.
       DATABASE_PATH: ":memory:",
     },
   },

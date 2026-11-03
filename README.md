@@ -199,7 +199,7 @@ It works on ENSv1 and ENSv2. The resolver interface didn't change in ENSv2. What
 
 ### 1. Put the app and the gateway on HTTPS
 
-Wallets call the gateway from browsers, and some go through ENS's hosted batch gateway. Both need a public HTTPS URL. The gateway also needs to reach the app's `/api/ens/{label}`. [gateway/README.md](gateway/README.md#deploy) has the Docker setup.
+The gateway needs a public HTTPS URL. Wallets call it straight from the browser, and some clients reach it through ENS's hosted batch gateway, which calls it from ENS's servers. The gateway also has to reach the app's `/api/ens/{label}`. Make the app public too, because the `url` and `avatar` records point at it. [gateway/README.md](gateway/README.md#deploy) has the Docker setup for the gateway.
 
 ### 2. Deploy the resolver
 

@@ -11,6 +11,13 @@ remappings = ["forge-std/=dependencies/forge-std-1.17.0/src/"]
 # The fixture test reads a real gateway response from disk.
 fs_permissions = [{ access = "read", path = "./test/fixtures" }]
 
+# Values come from contracts/.env, which Foundry loads automatically.
+[rpc_endpoints]
+mainnet = "${MAINNET_RPC_URL}"
+
+[etherscan]
+mainnet = { key = "${ETHERSCAN_API_KEY}" }
+
 # This code is read on screen: keep plain Solidity over small gas and size savings.
 [lint]
 exclude_lints = ["asm-keccak256", "unwrapped-modifier-logic"]

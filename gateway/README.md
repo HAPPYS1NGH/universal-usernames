@@ -52,10 +52,12 @@ App answers, including "not found", are cached for 30 seconds.
 ## Setup
 
 ```sh
-corepack pnpm install
+pnpm install
 cp gateway/.env.example gateway/.env
 cast wallet new
 ```
+
+Run these from the repository root, after `corepack enable`. `cast` comes with [Foundry](https://getfoundry.sh).
 
 Put the private key in `SIGNER_PRIVATE_KEY`. Keep the address: you pass it to the resolver when you deploy it.
 
@@ -75,7 +77,7 @@ The gateway checks these at startup and lists every problem before it exits.
 ## Run
 
 ```sh
-corepack pnpm --filter gateway dev
+pnpm --filter gateway dev
 ```
 
 ## Try it
@@ -112,8 +114,8 @@ The result is `abi.encode(address)`, exactly what `addr(bytes32)` returns onchai
 ## Test
 
 ```sh
-corepack pnpm --filter gateway test
-corepack pnpm --filter gateway typecheck
+pnpm --filter gateway test
+pnpm --filter gateway typecheck
 ```
 
 ## Deploy

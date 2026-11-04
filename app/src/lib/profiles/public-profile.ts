@@ -1,4 +1,5 @@
 import { getAddress, type Address } from "viem";
+import { getAvatarChoice, type AvatarChoice } from "@/lib/avatars/avatar-store";
 import type { Db } from "@/lib/db/connection";
 import { getLeaderboard } from "@/lib/portfolio/portfolio-queries";
 import { getWalletAddress } from "@/lib/wallet/embedded-wallet";
@@ -12,6 +13,7 @@ export type PublicProfile = {
   traderCount: number;
   valueCents: number;
   pnlPercent: number | null;
+  avatar: AvatarChoice | null;
 };
 
 export function getPublicProfile(db: Db, username: string, priceCents: number): PublicProfile | null {
@@ -29,5 +31,6 @@ export function getPublicProfile(db: Db, username: string, priceCents: number): 
     traderCount: leaderboard.length,
     valueCents: entry.valueCents,
     pnlPercent: entry.pnlPercent,
+    avatar: getAvatarChoice(db, entry.username),
   };
 }

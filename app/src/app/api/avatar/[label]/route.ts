@@ -1,12 +1,20 @@
 import { NextResponse } from "next/server";
 import { usernameExists } from "@/lib/accounts/accounts";
 import { validateUsername } from "@/lib/auth/username";
-import { getAvatarPhoto } from "@/lib/avatars/avatar-store";
+import { getAvatarChoice, getAvatarPhoto } from "@/lib/avatars/avatar-store";
 import { getDb } from "@/lib/db/connection";
-import { renderAvatarSvg } from "@/lib/profiles/avatar-svg";
+import { renderAvatarSvg, renderEmojiAvatarSvg } from "@/lib/profiles/avatar-svg";
+
+const HEADERS = {
+  // Avatars change when users pick a new one. The adapter versions the URL it
+  // publishes (?v=), so this short max-age only matters for the bare URL.
+  "Cache-Control": "public, max-age=300",
+  "Content-Security-Policy": "default-src 'none'; style-src 'unsafe-inline'",
+  "X-Content-Type-Options": "nosniff",
+};
 
 // The avatar ENS points at, as an image for every user: the uploaded photo,
-// or the generated SVG for everyone else.
+// the chosen emoji drawn as SVG, or the generated SVG for everyone else.
 export async function GET(_request: Request, context: RouteContext<"/api/avatar/[label]">) {
   const { label } = await context.params;
   if (!validateUsername(label).ok) {
@@ -17,27 +25,13 @@ export async function GET(_request: Request, context: RouteContext<"/api/avatar/
     return NextResponse.json({ error: "not_found" }, { status: 404 });
   }
 
-  const photo = getAvatarPhoto(db, label);
+  const choice = getAvatarChoice(db, label);
+  const photo = choice?.kind === "photo" ? getAvatarPhoto(db, label) : null;
   if (photo) {
-    return new Response(new Uint8Array(photo.bytes), {
-      headers: {
-        // The type was read from the file's bytes at upload, not taken from the client.
-        "Content-Type": photo.type,
-        // Pages add ?v=<updatedAt>, so a new photo gets a new URL. The short
-        // max-age only matters for the bare URL.
-        "Cache-Control": "public, max-age=300",
-        "Content-Security-Policy": "default-src 'none'",
-        "X-Content-Type-Options": "nosniff",
-      },
-    });
+    // The type was read from the file's bytes at upload, not taken from the client.
+    return new Response(new Uint8Array(photo.bytes), { headers: { ...HEADERS, "Content-Type": photo.type } });
   }
 
-  return new Response(renderAvatarSvg(label), {
-    headers: {
-      "Content-Type": "image/svg+xml",
-      "Cache-Control": "public, max-age=86400",
-      "Content-Security-Policy": "default-src 'none'; style-src 'unsafe-inline'",
-      "X-Content-Type-Options": "nosniff",
-    },
-  });
+  const svg = choice?.kind === "emoji" ? renderEmojiAvatarSvg(choice.emoji, choice.color) : renderAvatarSvg(label);
+  return new Response(svg, { headers: { ...HEADERS, "Content-Type": "image/svg+xml" } });
 }

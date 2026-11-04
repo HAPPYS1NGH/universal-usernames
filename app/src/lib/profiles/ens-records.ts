@@ -14,6 +14,13 @@ export type EnsRecords = {
   };
 };
 
+// A picked avatar gets ?v=<updatedAt>, so the record itself changes with the
+// avatar and ENS apps fetch the new image instead of a cached one.
+function avatarUrl(appUrl: string, profile: PublicProfile): string {
+  const url = `${appUrl}/api/avatar/${profile.username}`;
+  return profile.avatar ? `${url}?v=${profile.avatar.updatedAt}` : url;
+}
+
 export function buildEnsRecords(profile: PublicProfile, site: { brand: string; appUrl: string }): EnsRecords {
   const rank = `Rank #${profile.rank} on ${site.brand}`;
   const description = profile.pnlPercent === null ? rank : `${rank} · ${formatPercent(profile.pnlPercent)} PnL`;
@@ -23,7 +30,7 @@ export function buildEnsRecords(profile: PublicProfile, site: { brand: string; a
     texts: {
       description,
       url: `${site.appUrl}/u/${profile.username}`,
-      avatar: `${site.appUrl}/api/avatar/${profile.username}`,
+      avatar: avatarUrl(site.appUrl, profile),
     },
   };
 }

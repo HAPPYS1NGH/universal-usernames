@@ -2,9 +2,12 @@ import { getAddress } from "viem";
 import { beforeAll, describe, expect, it, vi } from "vitest";
 import { GET as getAvatar } from "@/app/api/avatar/[label]/route";
 import { GET as getEnsRecords } from "@/app/api/ens/[label]/route";
+import { saveAvatarPhoto, saveEmojiAvatar } from "@/lib/avatars/avatar-store";
 import { getDb } from "@/lib/db/connection";
+import { renderEmojiAvatarSvg } from "@/lib/profiles/avatar-svg";
 import { executeTrade } from "@/lib/trading/execute-trade";
 import { getWalletAddress } from "@/lib/wallet/embedded-wallet";
+import { pngBytes } from "./helpers/image-bytes";
 import { createTestUser } from "./helpers/test-db";
 
 // Fixed price, so the route never calls Coinbase during tests.
@@ -55,6 +58,14 @@ describe("GET /api/ens/{label}", () => {
     });
   });
 
+  it("versions the avatar URL once the user picks an avatar", async () => {
+    const foxId = createTestUser(getDb(), "foxy");
+    saveEmojiAvatar(getDb(), foxId, { emoji: "🦊", color: "#ff9f0a" }, 1_700_000_000_000);
+
+    const records = (await (await requestEns("foxy")).json()) as { texts: { avatar: string } };
+    expect(records.texts.avatar).toBe("http://localhost:3000/api/avatar/foxy?v=1700000000000");
+  });
+
   it("returns 404 for an unknown username", async () => {
     const response = await requestEns("nobody");
     expect(response.status).toBe(404);
@@ -72,7 +83,15 @@ describe("GET /api/ens/{label}", () => {
 });
 
 describe("GET /api/avatar/{label}", () => {
-  it("returns a deterministic SVG for a known username", async () => {
+  const photo = pngBytes(256, 256);
+
+  beforeAll(() => {
+    const db = getDb();
+    saveAvatarPhoto(db, createTestUser(db, "parrot"), { bytes: photo, type: "image/png" });
+    saveEmojiAvatar(db, createTestUser(db, "owl"), { emoji: "🦉", color: "#1d3a6e" });
+  });
+
+  it("returns a deterministic SVG for a user without a picked avatar", async () => {
     const first = await requestAvatar("happy");
     const second = await requestAvatar("happy");
 
@@ -81,6 +100,31 @@ describe("GET /api/avatar/{label}", () => {
     const svg = await first.text();
     expect(svg).toContain(">H</text>");
     expect(await second.text()).toBe(svg);
+  });
+
+  it("draws a picked emoji on its color as SVG", async () => {
+    const response = await requestAvatar("owl");
+
+    expect(response.status).toBe(200);
+    expect(response.headers.get("content-type")).toBe("image/svg+xml");
+    const svg = await response.text();
+    expect(svg).toContain('fill="#1d3a6e"');
+    expect(svg).toContain(">🦉</text>");
+  });
+
+  it("escapes the emoji SVG even though its inputs are allowlisted", () => {
+    const svg = renderEmojiAvatarSvg("</text><script>", '"/><script>');
+    expect(svg).not.toContain("<script>");
+  });
+
+  it("serves an uploaded photo with its stored type", async () => {
+    const response = await requestAvatar("parrot");
+
+    expect(response.status).toBe(200);
+    expect(response.headers.get("content-type")).toBe("image/png");
+    expect(response.headers.get("x-content-type-options")).toBe("nosniff");
+    expect(response.headers.get("cache-control")).toBe("public, max-age=300");
+    expect(new Uint8Array(await response.arrayBuffer())).toEqual(photo);
   });
 
   it("returns 404 for unknown usernames and 400 for invalid labels", async () => {

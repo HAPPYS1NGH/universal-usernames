@@ -37,3 +37,17 @@ export function renderAvatarSvg(username: string): string {
   <text x="50%" y="50%" dy="0.35em" text-anchor="middle" fill="#ffffff" font-family="Helvetica, Arial, sans-serif" font-size="128" font-weight="700">${initial}</text>
 </svg>`;
 }
+
+function escapeXml(value: string): string {
+  return value.replace(/[&<>"']/g, (char) => `&#${char.charCodeAt(0)};`);
+}
+
+// An emoji on a colored square, which ENS apps crop to a circle like the app
+// does. Both values come from the allowlists in emoji-catalog.ts; they're
+// escaped anyway, because this string is markup.
+export function renderEmojiAvatarSvg(emoji: string, color: string): string {
+  return `<svg xmlns="http://www.w3.org/2000/svg" width="${SIZE}" height="${SIZE}" viewBox="0 0 ${SIZE} ${SIZE}">
+  <rect width="${SIZE}" height="${SIZE}" fill="${escapeXml(color)}"/>
+  <text x="50%" y="50%" dominant-baseline="central" text-anchor="middle" font-family="Apple Color Emoji, Segoe UI Emoji, Noto Color Emoji, sans-serif" font-size="136">${escapeXml(emoji)}</text>
+</svg>`;
+}

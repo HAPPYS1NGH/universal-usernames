@@ -15,6 +15,8 @@ contract GatewayFixtureTest is Test {
     OffchainResolver resolver;
 
     function setUp() public {
+        // Reads the committed gateway fixture. fs_permissions in foundry.toml limits reads to test/fixtures.
+        // forge-lint: disable-next-line(unsafe-cheatcode)
         fixture = vm.readFile("test/fixtures/gateway-response.json");
 
         address[] memory signers = new address[](1);

@@ -135,6 +135,59 @@ html body {
   }
 }
 
+/* Bottom sheet (components/bottom-sheet.tsx): a native <dialog> that rises on
+   the iOS curve and leaves faster, accelerating away. allow-discrete keeps it
+   in the top layer while it slides out; browsers without it just close. */
+.bottom-sheet {
+  translate: 0 100%;
+  transition:
+    translate 200ms cubic-bezier(0.4, 0, 1, 1),
+    overlay 200ms allow-discrete,
+    display 200ms allow-discrete;
+}
+.bottom-sheet[open] {
+  translate: 0 0;
+  transition-duration: 300ms;
+  transition-timing-function: var(--ease-ios);
+}
+@starting-style {
+  .bottom-sheet[open] {
+    translate: 0 100%;
+  }
+}
+.bottom-sheet::backdrop {
+  background: oklch(0.2 0.01 85 / 0);
+  transition:
+    background-color 200ms ease-out,
+    overlay 200ms allow-discrete,
+    display 200ms allow-discrete;
+}
+.bottom-sheet[open]::backdrop {
+  background: oklch(0.2 0.01 85 / 0.42);
+}
+@starting-style {
+  .bottom-sheet[open]::backdrop {
+    background: oklch(0.2 0.01 85 / 0);
+  }
+}
+html:has(.bottom-sheet[open]) {
+  overflow: hidden;
+}
+
+/* Steps inside a sheet slide in from the side they come from. */
+@keyframes step-forward {
+  from {
+    opacity: 0;
+    translate: 1rem 0;
+  }
+}
+@keyframes step-back {
+  from {
+    opacity: 0;
+    translate: -1rem 0;
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,

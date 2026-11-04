@@ -1,3 +1,4 @@
+import type { AvatarChoice } from "@/lib/avatars/avatar-store";
 import { formatPercent, formatUsd } from "@/lib/money";
 import type { LeaderboardEntry } from "@/lib/portfolio/portfolio-queries";
 import { UserAvatar } from "./user-avatar";
@@ -5,6 +6,7 @@ import { UserAvatar } from "./user-avatar";
 type LeaderboardTableProps = {
   entries: LeaderboardEntry[];
   currentUsername: string | null;
+  avatars: Map<string, AvatarChoice>;
 };
 
 function pnlTone(percent: number | null): string {
@@ -14,7 +16,7 @@ function pnlTone(percent: number | null): string {
   return rounded > 0 ? "text-up" : "text-down";
 }
 
-export function LeaderboardTable({ entries, currentUsername }: LeaderboardTableProps) {
+export function LeaderboardTable({ entries, currentUsername, avatars }: LeaderboardTableProps) {
   if (entries.length === 0) {
     return (
       <p className="rounded-card bg-surface p-5 text-[0.9375rem] font-medium text-muted shadow-card">
@@ -36,7 +38,7 @@ export function LeaderboardTable({ entries, currentUsername }: LeaderboardTableP
               <span className="sr-only">Rank </span>
               {entry.rank}
             </span>
-            <UserAvatar username={entry.username} />
+            <UserAvatar username={entry.username} avatar={avatars.get(entry.username) ?? null} />
             <div className="min-w-0 flex-1">
               <p className="flex flex-wrap items-center gap-x-2 text-[1.0625rem] font-semibold tracking-[-0.02em]">
                 <span className="[overflow-wrap:anywhere]">@{entry.username}</span>

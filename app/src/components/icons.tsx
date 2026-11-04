@@ -117,3 +117,56 @@ export function EthIcon({ className = "size-6" }: IconProps) {
     </svg>
   );
 }
+
+export function CameraIcon(props: IconProps) {
+  return (
+    <StrokeIcon {...props}>
+      <path d="M8.2 7.2 9.4 5.6h5.2l1.2 1.6H19a2 2 0 0 1 2 2v8.2a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V9.2a2 2 0 0 1 2-2z" />
+      <circle cx="12" cy="13" r="3.1" />
+    </StrokeIcon>
+  );
+}
+
+export function PhotoIcon(props: IconProps) {
+  return (
+    <StrokeIcon {...props}>
+      <rect x="4" y="5" width="16" height="14" rx="2.2" />
+      <circle cx="9" cy="10" r="1.2" />
+      <path d="M5.5 16.5l4-4 3 3 2.5-2.5 3.5 3.5" />
+    </StrokeIcon>
+  );
+}
+
+export function PencilIcon(props: IconProps) {
+  return (
+    <StrokeIcon {...props}>
+      <path d="M14.5 5.5l4 4L9 19l-4.5.5L5 15z" />
+      <path d="M13 7l4 4" />
+    </StrokeIcon>
+  );
+}
+
+export function CloseIcon(props: IconProps) {
+  return (
+    <StrokeIcon {...props}>
+      <path d="M6 6l12 12M18 6L6 18" />
+    </StrokeIcon>
+  );
+}
+
+export function ChevronLeftIcon(props: IconProps) {
+  return (
+    <StrokeIcon {...props}>
+      <path d="M15 5l-7 7 7 7" />
+    </StrokeIcon>
+  );
+}
+
+export function SearchIcon(props: IconProps) {
+  return (
+    <StrokeIcon {...props}>
+      <circle cx="11" cy="11" r="6" />
+      <path d="M15.5 15.5L20 20" />
+    </StrokeIcon>
+  );
+}

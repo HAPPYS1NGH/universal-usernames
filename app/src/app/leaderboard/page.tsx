@@ -3,6 +3,7 @@ import { AutoRefresh } from "@/components/auto-refresh";
 import { EthPriceChip } from "@/components/eth-price-chip";
 import { LeaderboardTable } from "@/components/leaderboard-table";
 import { getSessionUser } from "@/lib/auth/session";
+import { getAvatarChoices } from "@/lib/avatars/avatar-store";
 import { brandName } from "@/lib/config";
 import { getDb } from "@/lib/db/connection";
 import { getEthPrice } from "@/lib/market/eth-price";
@@ -15,7 +16,9 @@ const REFRESH_MS = 15_000;
 export default async function LeaderboardPage() {
   const user = await getSessionUser();
   const price = await getEthPrice();
-  const entries = getLeaderboard(getDb(), price.cents);
+  const db = getDb();
+  const entries = getLeaderboard(db, price.cents);
+  const avatars = getAvatarChoices(db, entries.map((entry) => entry.username));
 
   return (
     <div className="flex flex-col gap-5">
@@ -29,7 +32,7 @@ export default async function LeaderboardPage() {
           <EthPriceChip price={price} />
         </div>
       </header>
-      <LeaderboardTable entries={entries} currentUsername={user?.username ?? null} />
+      <LeaderboardTable entries={entries} currentUsername={user?.username ?? null} avatars={avatars} />
     </div>
   );
 }

@@ -2,7 +2,9 @@ import type { Metadata, Viewport } from "next";
 import { TabBar } from "@/components/nav-links";
 import { SiteHeader } from "@/components/site-header";
 import { getSessionUser } from "@/lib/auth/session";
+import { getAvatarChoice } from "@/lib/avatars/avatar-store";
 import { appUrl, brandName } from "@/lib/config";
+import { getDb } from "@/lib/db/connection";
 import "./globals.css";
 
 export function generateMetadata(): Metadata {
@@ -32,13 +34,14 @@ export const viewport: Viewport = {
 
 export default async function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   const user = await getSessionUser();
+  const avatar = user ? getAvatarChoice(getDb(), user.username) : null;
 
   return (
     <html lang="en">
       <body className="min-h-dvh font-sans">
         {/* Phone-width app column, centered on the cream ground on wide screens. */}
         <div className="mx-auto flex min-h-dvh w-full max-w-app flex-col">
-          <SiteHeader user={user} />
+          <SiteHeader user={user} avatar={avatar} />
           <main className={`flex-1 px-5 pt-2 ${user ? BOTTOM_PADDING.withTabBar : BOTTOM_PADDING.plain}`}>
             {children}
           </main>

@@ -1,4 +1,5 @@
 import type { ActivityEntry } from "@/lib/activity/activity";
+import type { AvatarChoice } from "@/lib/avatars/avatar-store";
 import { formatEth, formatUsd } from "@/lib/money";
 import { formatTimeAgo } from "@/lib/time-ago";
 import { EthIcon } from "./icons";
@@ -32,7 +33,13 @@ function describe(entry: ActivityEntry): { title: string; detail: string; amount
   }
 }
 
-export function ActivityList({ entries }: { entries: ActivityEntry[] }) {
+type ActivityListProps = {
+  entries: ActivityEntry[];
+  // Avatars of the people in transfers, by username.
+  avatars: Map<string, AvatarChoice>;
+};
+
+export function ActivityList({ entries, avatars }: ActivityListProps) {
   return (
     <section aria-labelledby="activity-heading">
       <h2 id="activity-heading" className="mb-2 px-1 text-[0.9375rem] font-medium text-muted">
@@ -53,7 +60,7 @@ export function ActivityList({ entries }: { entries: ActivityEntry[] }) {
                     <EthIcon className="size-6" />
                   </span>
                 ) : (
-                  <UserAvatar username={entry.counterparty} />
+                  <UserAvatar username={entry.counterparty} avatar={avatars.get(entry.counterparty) ?? null} />
                 )}
                 <div className="min-w-0 flex-1">
                   <p className="font-semibold tracking-[-0.01em] [overflow-wrap:anywhere]">{title}</p>

@@ -125,14 +125,16 @@ MAINNET_RPC_URL=<rpc> corepack pnpm --filter gateway check-name happy.tradepit.e
 
 ```text
 name         happy.tradepit.eth
-resolver     0x394D8EB4a4fDF599384DeAb25F31d111d755c398 (ENSV1Resolver: forwards to the resolver set in ENSv1)
+resolver     0x…
 address      0x…
 description  Rank #2 on Tradepit · +12.4% PnL
 url          https://…/u/happy
 avatar       https://…/api/avatar/happy
 ```
 
-For a parent in ENSv2, `resolver` is `$RESOLVER` itself. Clients need viem 2.35.0 or later, or ethers 6.17.0 or later.
+`tradepit.eth` is an ENSv2 name, so `resolver` is `$RESOLVER` itself. For a parent that hasn't migrated, it's `0x394D8EB4a4fDF599384DeAb25F31d111d755c398 (ENSV1Resolver: forwards to the resolver set in ENSv1)`. Clients need viem 2.35.0 or later, or ethers 6.17.0 or later.
+
+A username nobody has signed up with prints `(none)`. If the lookup itself fails, the script prints the error and exits with 1. For example, `ResolverError(0x8baa579f = InvalidSignature)` means the resolver doesn't trust the gateway's signer.
 
 ## Move the gateway or rotate the signer
 

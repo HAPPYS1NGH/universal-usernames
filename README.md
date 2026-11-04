@@ -135,8 +135,8 @@ Your seeded wallets have their own addresses, and PnL moves with the ETH price, 
 
 Two routes back the text records:
 
-- `GET /api/avatar/{label}` returns a generated SVG avatar. Colors come from a hash of the username, so they never change.
-- `/u/{username}` is a public profile page with rank, PnL, portfolio value and wallet address.
+- `GET /api/avatar/{label}` returns the avatar the user picked in step 00: their uploaded photo, or their emoji drawn on its color as SVG. Everyone else gets a generated SVG whose colors come from a hash of the username. Once a user picks an avatar, `texts.avatar` ends in `?v=<timestamp>`, so the record changes with the picture and ENS apps don't keep showing a cached one.
+- `/u/{username}` is a public profile page with rank, PnL, portfolio value and wallet address. On your own profile, tapping the avatar changes it.
 
 Usernames on the leaderboard now link to their profile pages.
 

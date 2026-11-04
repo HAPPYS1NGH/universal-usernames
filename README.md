@@ -71,6 +71,31 @@ Step 5 is the problem the rest of the workshop solves.
 
 `wallet:sweep` decrypts a real private key and moves real mainnet ETH: run the dry run first and check the destination address.
 
+### Run it in production
+
+`app/Dockerfile` packages the standalone server. Any Docker host that serves HTTPS works, Fly.io for example. Build from the repository root:
+
+```sh
+docker build -f app/Dockerfile -t tradepit-app .
+docker run -d --name tradepit -p 3000:3000 -v tradepit-data:/data \
+  -e WALLET_ENCRYPTION_KEY=<64 hex characters> \
+  -e APP_URL=https://tradepit.example.com \
+  tradepit-app
+docker exec tradepit node scripts/seed.cjs   # optional: the demo traders
+```
+
+| Variable | In production |
+| --- | --- |
+| `WALLET_ENCRYPTION_KEY` | Required. Back it up: without it, ETH sent to the embedded wallets is lost |
+| `DATABASE_PATH` | The image sets `/data/app.db`. It must be an absolute path on a persistent volume |
+| `APP_URL` | The app's public HTTPS URL |
+| `RPC_URL` | Optional. Your own mainnet RPC |
+| `BRAND_NAME` | Optional. Defaults to `Tradepit` |
+
+Why absolute: `server.js` switches to its own folder when it starts, so a relative path quietly creates a new, empty database inside the container. That's also why `app/.env` can't go to `--env-file` as is: its `DATABASE_PATH` is relative.
+
+The container runs as the `node` user (uid 1000), and the volume must be writable by it. The image has no tsx. The seed script is bundled as `scripts/seed.cjs` instead: run it inside the app container, like the `docker exec` line above.
+
 ### Next step: 01-adapter
 
 ```sh

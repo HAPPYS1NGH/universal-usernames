@@ -13,7 +13,7 @@ forge build
 forge test
 ```
 
-`test/GatewayFixture.t.sol` checks answers produced by the real gateway code. If you change how the gateway encodes or signs, regenerate the fixture with `corepack pnpm --filter gateway fixture`.
+`test/GatewayFixture.t.sol` checks answers produced by the real gateway code. If you change how the gateway encodes or signs, regenerate the fixture with `pnpm --filter gateway fixture`.
 
 ## Deploy
 
@@ -64,7 +64,7 @@ The script prints the resolver address. Use it as `$RESOLVER` below.
 Which contract you call depends on where the parent name lives. This read-only script checks and prints the exact command:
 
 ```sh
-MAINNET_RPC_URL=<rpc> corepack pnpm --filter gateway parent-setup tradepit.eth $RESOLVER
+MAINNET_RPC_URL=<rpc> pnpm --filter gateway parent-setup tradepit.eth $RESOLVER
 ```
 
 It reads `getStatus(labelhash)` on the ENSv2 ETHRegistry (2 = registered in ENSv2, 1 = reserved, so the name hasn't migrated), then the ENSv1 registry owner to tell wrapped from unwrapped names.
@@ -120,7 +120,7 @@ The resolver deliberately does not advertise ERC-7996 resolver features. With it
 This resolves the name on mainnet through the Universal Resolver, the way a wallet does:
 
 ```sh
-MAINNET_RPC_URL=<rpc> corepack pnpm --filter gateway check-name happy.tradepit.eth
+MAINNET_RPC_URL=<rpc> pnpm --filter gateway check-name happy.tradepit.eth
 ```
 
 ```text

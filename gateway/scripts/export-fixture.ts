@@ -4,7 +4,7 @@
 // Everything is fixed (test key, resolver address, clock, app data), so the
 // output only changes when the gateway's encoding or signing changes.
 //
-//   corepack pnpm --filter gateway fixture
+//   pnpm --filter gateway fixture
 
 import { writeFile } from "node:fs/promises";
 import { encodeFunctionData, parseAbi, toHex, type Hex } from "viem";

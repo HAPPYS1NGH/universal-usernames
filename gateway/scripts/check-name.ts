@@ -1,7 +1,7 @@
 // Resolves a name on Ethereum mainnet the way a wallet does: through the ENS
 // Universal Resolver, following the CCIP-Read lookup to the gateway.
 //
-//   corepack pnpm --filter gateway check-name happy.tradepit.eth
+//   pnpm --filter gateway check-name happy.tradepit.eth
 //
 // Set MAINNET_RPC_URL to use your own RPC. Read-only: it never sends a transaction.
 

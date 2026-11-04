@@ -1,7 +1,7 @@
 // Tells you which contract sets the resolver of your parent name, and prints
 // the exact `cast send` command. Read-only: it never sends a transaction.
 //
-//   corepack pnpm --filter gateway parent-setup tradepit.eth [resolverAddress]
+//   pnpm --filter gateway parent-setup tradepit.eth [resolverAddress]
 //
 // Set MAINNET_RPC_URL to use your own RPC.
 

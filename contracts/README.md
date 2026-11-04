@@ -69,7 +69,7 @@ MAINNET_RPC_URL=<rpc> corepack pnpm --filter gateway parent-setup tradepit.eth $
 
 It reads `getStatus(labelhash)` on the ENSv2 ETHRegistry (2 = registered in ENSv2, 1 = reserved, so the name hasn't migrated), then the ENSv1 registry owner to tell wrapped from unwrapped names.
 
-Send the command from the wallet that owns the name (`name-owner` below, which can be the same keystore account as `deployer`).
+Send the command from the wallet that owns the name. The commands below use a keystore account called `name-owner`: import it with `cast wallet import name-owner --interactive`, or use `deployer` if that key owns the name.
 
 ### In the ENS app
 

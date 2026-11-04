@@ -218,9 +218,10 @@ forge script script/Deploy.s.sol --rpc-url mainnet --account deployer --broadcas
 
 ```sh
 MAINNET_RPC_URL=<rpc> pnpm parent-setup tradepit.eth <resolver address>
+cast wallet import name-owner --interactive   # key of the wallet that owns tradepit.eth
 ```
 
-This read-only script works out whether the name is ENSv1 unwrapped, ENSv1 wrapped or ENSv2, and prints the exact `cast send` to run from the wallet that owns the name. You can also set a custom resolver in [app.ens.domains](https://app.ens.domains).
+This read-only script works out whether the name is ENSv1 unwrapped, ENSv1 wrapped or ENSv2, and prints the exact `cast send` to run from the wallet that owns the name. That command signs with the `name-owner` keystore account. If `deployer` owns the name, skip the import and use `--account deployer`. Or skip the keystore and set a custom resolver in [app.ens.domains](https://app.ens.domains) with whatever wallet owns the name, MetaMask for example.
 
 > [!WARNING]
 > Migrating a name to ENSv2 clears its ENSv1 resolver. If you migrate later, set the resolver again in the migration or right after it.

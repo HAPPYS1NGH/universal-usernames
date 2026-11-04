@@ -16,6 +16,12 @@ Each branch is one step. Check out a branch and follow its README.
 
 Tradepit is a small paper-trading app. You sign up with a username and get $10,000 of demo cash to trade ETH/USD at the live Coinbase price. Every account also gets an embedded wallet: a real Ethereum mainnet address whose private key the server generates and stores encrypted.
 
+### Avatars
+
+Tap your avatar in the top bar to change it. Pick an emoji on a colored circle, or upload a photo. Until you do, you get a generated avatar: your initial on a gradient derived from your username.
+
+Uploads stay in the app. Before uploading, the browser crops the photo to a 512×512 JPEG, which also strips EXIF data like GPS location. The server reads the format and size from the file's bytes and accepts JPEG, PNG, WebP or GIF, up to 512 KB and 64 to 2048 pixels a side. Photos are stored in the SQLite database, on the same volume as everything else, and `/api/avatar/<username>` serves them to the app's pages. Emoji and generated avatars are drawn in the page itself.
+
 ### The problem: sealed usernames
 
 Inside the app you can send cash to `@happy`. Outside it, the name means nothing. MetaMask can't send to "happy", so to deposit ETH you copy a 42-character hex address from the wallet page. The username lives in one app's database, and nothing else can read it.
@@ -51,12 +57,13 @@ The database is created on first use at `app/data/app.db`. It holds encrypted wa
 ### Demo script
 
 1. Open `/` and create an account, for example `happy`.
-2. On **Trade**, buy $1,000 of ETH. Portfolio value and PnL update with the price.
-3. Open **Leaderboard**. You're ranked by PnL, and transfers don't count toward it.
-4. On **Wallet**, send $25 to `@nora`. It works because both usernames live in this app.
-5. Still on **Wallet**, look at **Deposit ETH**. To fund this account from MetaMask you have to copy the hex address. Send a small amount on mainnet and watch the onchain balance update; it refreshes every 10 seconds.
+2. Tap your avatar in the top bar and pick an emoji or a photo.
+3. On **Trade**, buy $1,000 of ETH. Portfolio value and PnL update with the price.
+4. Open **Leaderboard**. You're ranked by PnL, and transfers don't count toward it.
+5. On **Wallet**, send $25 to `@nora`. It works because both usernames live in this app.
+6. Still on **Wallet**, look at **Deposit ETH**. To fund this account from MetaMask you have to scan the QR code or copy the hex address. Send a small amount on mainnet and watch the onchain balance update; it refreshes every 10 seconds.
 
-Step 5 is the problem the rest of the workshop solves.
+Step 6 is the problem the rest of the workshop solves.
 
 ### Commands
 

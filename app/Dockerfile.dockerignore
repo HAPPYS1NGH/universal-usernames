@@ -1,0 +1,13 @@
+# Used by `docker build -f app/Dockerfile .`: send only what the image needs.
+# An allowlist, so app/.env and the SQLite database never reach the build.
+*
+!package.json
+!pnpm-workspace.yaml
+!pnpm-lock.yaml
+!app/package.json
+!app/next.config.ts
+!app/postcss.config.mjs
+!app/tsconfig.json
+!app/scripts/
+!app/src/
+!app/public/

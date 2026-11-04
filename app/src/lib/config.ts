@@ -7,6 +7,9 @@ export function brandName(): string {
   return process.env.BRAND_NAME?.trim() || "Tradepit";
 }
 
+// A relative path resolves against the working directory. The standalone
+// server.js changes it to its own folder, so production needs an absolute path
+// (app/Dockerfile sets /data/app.db).
 export function databasePath(): string {
   return process.env.DATABASE_PATH?.trim() || "./data/app.db";
 }

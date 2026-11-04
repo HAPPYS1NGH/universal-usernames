@@ -17,8 +17,8 @@ type SiteHeaderProps = {
 };
 
 // Top bar of the app column. Signed in, it shows who you are, like a wallet
-// app's account header, and your avatar opens the avatar picker. Signed out,
-// it shows the brand.
+// app's account header: your avatar opens the avatar picker and your username
+// opens your public profile. Signed out, it shows the brand.
 export function SiteHeader({ user, avatar }: SiteHeaderProps) {
   const brand = brandName();
 
@@ -35,7 +35,7 @@ export function SiteHeader({ user, avatar }: SiteHeaderProps) {
               <AvatarFace face={avatarFace(user.username, avatar)} />
             </AvatarPicker>
             <Link
-              href="/trade"
+              href={`/u/${user.username}`}
               className="min-w-0 rounded-full px-2 py-1 leading-tight transition-colors duration-150 ease-out hover:bg-fill"
             >
               <span className="block truncate text-[1.0625rem] font-[650] tracking-[-0.02em]">@{user.username}</span>

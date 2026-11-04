@@ -17,42 +17,42 @@ function pnlTone(percent: number | null): string {
 export function LeaderboardTable({ entries, currentUsername }: LeaderboardTableProps) {
   if (entries.length === 0) {
     return (
-      <p className="rounded-[1.75rem] bg-surface p-4 text-lg text-muted">
+      <p className="rounded-card bg-surface p-5 text-[0.9375rem] font-medium text-muted shadow-card">
         No traders yet. Create an account to take the top spot.
       </p>
     );
   }
 
   return (
-    <ol className="-mx-2 flex flex-col">
+    <ol className="divide-y divide-line overflow-hidden rounded-card bg-surface shadow-card">
       {entries.map((entry) => {
         const isYou = entry.username === currentUsername;
         return (
           <li
             key={entry.userId}
-            className={`flex items-center gap-3 rounded-2xl px-2 py-3 ${isYou ? "bg-surface ring-1 ring-line" : ""}`}
+            className={`flex min-h-[4.25rem] items-center gap-3 py-2.5 pr-4 pl-3 ${isYou ? "bg-accent-soft/50" : ""}`}
           >
-            <span className="w-7 shrink-0 text-center text-lg font-semibold text-muted tabular-nums">
+            <span className="w-6 shrink-0 text-center text-[0.9375rem] font-bold text-muted tabular-nums">
               <span className="sr-only">Rank </span>
               {entry.rank}
             </span>
             <UserAvatar username={entry.username} />
             <div className="min-w-0 flex-1">
-              <p className="flex flex-wrap items-center gap-x-2 text-lg font-semibold">
+              <p className="flex flex-wrap items-center gap-x-2 text-[1.0625rem] font-semibold tracking-[-0.02em]">
                 <span className="[overflow-wrap:anywhere]">@{entry.username}</span>
                 {isYou && (
-                  <span className="shrink-0 rounded-full bg-ink px-2 py-0.5 text-xs font-semibold text-canvas">
+                  <span className="shrink-0 rounded-full bg-accent px-2 py-0.5 text-[0.75rem] font-bold tracking-normal text-white">
                     You
                   </span>
                 )}
               </p>
             </div>
             <div className="shrink-0 text-right tabular-nums">
-              <p className="text-lg font-semibold">
+              <p className="text-[1.0625rem] font-semibold">
                 <span className="sr-only">Portfolio value </span>
                 {formatUsd(entry.valueCents)}
               </p>
-              <p className={`font-semibold ${pnlTone(entry.pnlPercent)}`}>
+              <p className={`text-[0.875rem] font-semibold ${pnlTone(entry.pnlPercent)}`}>
                 <span className="sr-only">PnL </span>
                 {formatPercent(entry.pnlPercent)}
               </p>

@@ -1,9 +1,11 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, type ReactNode } from "react";
 import { formatWeiAsEth } from "@/lib/money";
+import { AnimatedNumber } from "./animated-number";
+import { QUIET_BUTTON } from "./control-styles";
 import { CopyButton } from "./copy-button";
-import { ArrowDownIcon, ArrowUpRightIcon } from "./icons";
+import { ArrowUpRightIcon } from "./icons";
 
 const POLL_INTERVAL_MS = 10_000;
 
@@ -33,7 +35,13 @@ async function fetchBalanceWei(): Promise<bigint> {
   return BigInt(body.balanceWei);
 }
 
-export function DepositCard({ address }: { address: string }) {
+type DepositCardProps = {
+  address: string;
+  // Rendered on the server, so the QR encoder never ships to the browser.
+  qr: ReactNode;
+};
+
+export function DepositCard({ address, qr }: DepositCardProps) {
   const [balance, setBalance] = useState(INITIAL_BALANCE);
   const [checking, setChecking] = useState(true);
   const [now, setNow] = useState(() => Date.now());
@@ -75,58 +83,49 @@ export function DepositCard({ address }: { address: string }) {
   const recentDeposit = balance.lastDeposit && now - balance.lastDeposit.at < 60_000 ? balance.lastDeposit : null;
 
   return (
-    <section
-      aria-labelledby="deposit-heading"
-      className="overflow-hidden rounded-[1.75rem] bg-surface ring-1 ring-line"
-    >
-      <div className="p-4">
-        <div className="flex items-center gap-3">
-          <span className="grid size-12 shrink-0 place-items-center rounded-full bg-raised">
-            <ArrowDownIcon className="size-6" />
-          </span>
-          <div>
-            <h2 id="deposit-heading" className="text-xl font-semibold tracking-tight">
-              Deposit ETH
-            </h2>
-            <p className="text-muted">Send ETH on Ethereum mainnet to this address.</p>
-          </div>
-        </div>
-        <div className="mt-4 rounded-xl bg-canvas p-4 ring-1 ring-line">
-          <code className="block font-mono text-xl leading-snug break-all">{address}</code>
-        </div>
-        <div className="mt-3 grid">
-          <CopyButton value={address} label="Copy address" />
+    <section aria-labelledby="deposit-heading" className="overflow-hidden rounded-card bg-surface shadow-card">
+      <div className="flex flex-col items-center p-5 text-center">
+        <h2 id="deposit-heading" className="text-[1.0625rem] font-[650] tracking-[-0.02em]">
+          Deposit ETH
+        </h2>
+        <p className="mt-0.5 text-[0.9375rem] font-medium text-muted text-balance">
+          Send ETH on Ethereum mainnet to this address.
+        </p>
+        <div className="mt-5">{qr}</div>
+        <code className="mt-5 block max-w-[24ch] font-mono text-[1rem] leading-snug font-semibold break-all">
+          {address}
+        </code>
+        <div className="mt-4 grid w-full grid-cols-2 gap-2">
+          <CopyButton value={address} label="Copy" />
+          <a
+            href={`https://etherscan.io/address/${address}`}
+            target="_blank"
+            rel="noreferrer"
+            className={`${QUIET_BUTTON} pr-4 pl-5`}
+          >
+            Etherscan
+            <ArrowUpRightIcon className="size-4" />
+          </a>
         </div>
       </div>
 
       <div
         key={recentDeposit?.at}
-        className="border-t border-line p-4"
+        className="border-t border-line px-5 pt-4 pb-5"
         style={recentDeposit ? { animation: "flash-up 3s ease-out" } : undefined}
       >
-        <div className="flex items-center justify-between gap-4">
-          <p className="font-medium text-muted">Onchain balance</p>
-          <a
-            href={`https://etherscan.io/address/${address}`}
-            target="_blank"
-            rel="noreferrer"
-            className="-my-2 -mr-2 inline-flex h-11 items-center gap-1 rounded-lg px-2 font-medium text-muted transition-colors duration-150 ease-out hover:text-ink"
-          >
-            View on Etherscan
-            <ArrowUpRightIcon className="size-4" />
-          </a>
-        </div>
-        <p className="mt-1 text-[2.75rem] leading-tight font-semibold tracking-tight tabular-nums">
-          {balance.wei === null ? "–" : formatWeiAsEth(balance.wei)}
-          <span className="ml-2 text-2xl font-medium text-muted">ETH</span>
+        <p className="text-[0.9375rem] font-medium text-muted">Onchain balance</p>
+        <p className="mt-1 text-[2.25rem] leading-tight font-bold tracking-[-0.03em] tabular-nums">
+          {balance.wei === null ? "–" : <AnimatedNumber value={Number(formatWeiAsEth(balance.wei))} maxFractionDigits={6} />}
+          <span className="ml-2 text-[1.25rem] font-semibold text-muted">ETH</span>
         </p>
         {recentDeposit && (
-          <p className="mt-3 inline-flex rounded-full bg-up-soft px-4 py-2 text-lg font-semibold text-up">
+          <p className="mt-3 inline-flex rounded-full bg-up-soft px-4 py-2 text-[0.9375rem] font-semibold text-up">
             +{formatWeiAsEth(recentDeposit.wei)} ETH received
           </p>
         )}
-        <p className="mt-3 flex items-center gap-2.5 text-muted" aria-live="polite">
-          <span className={`size-2 rounded-full ${balance.failed ? "bg-warn" : "animate-pulse bg-up"}`} />
+        <p className="mt-2 flex items-center gap-2 text-[0.8125rem] font-medium text-muted" aria-live="polite">
+          <span className={`size-2 rounded-full ${balance.failed ? "bg-warn" : "animate-pulse bg-up-dot"}`} />
           {checking
             ? "Checking Ethereum…"
             : balance.failed
@@ -134,11 +133,11 @@ export function DepositCard({ address }: { address: string }) {
               : `Updated ${secondsAgo === 0 ? "just now" : `${secondsAgo}s ago`}`}
         </p>
       </div>
-      <div className="h-1 bg-canvas">
+      <div className="h-1 bg-fill">
         {!checking && (
           <div
             key={balance.checkedAt}
-            className="h-full origin-left bg-muted/60"
+            className="h-full origin-left bg-lavender"
             style={{ animation: `countdown ${POLL_INTERVAL_MS}ms linear forwards` }}
           />
         )}

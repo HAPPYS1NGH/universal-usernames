@@ -24,7 +24,7 @@ export default async function TradePage() {
       <AutoRefresh intervalMs={PRICE_REFRESH_MS} />
       <h1 className="sr-only">Trade</h1>
       <PortfolioSummary portfolio={portfolio} />
-      <section aria-label="Trade ETH" className="flex flex-col gap-5 rounded-[1.75rem] bg-surface p-4 ring-1 ring-line">
+      <section aria-label="Trade ETH" className="flex flex-col gap-5 rounded-card bg-surface p-4 shadow-card">
         <PriceHeading price={price} />
         <TradePanel cashCents={portfolio.cashCents} ethGwei={portfolio.ethGwei} priceCents={price.cents} />
       </section>

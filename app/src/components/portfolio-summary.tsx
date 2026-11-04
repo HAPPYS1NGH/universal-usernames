@@ -1,26 +1,33 @@
-import { formatPercent, formatSignedUsd, formatUsd } from "@/lib/money";
+import { formatPercent, formatSignedUsd } from "@/lib/money";
 import type { Portfolio } from "@/lib/portfolio/portfolio-queries";
+import { AnimatedUsd } from "./animated-number";
 
+const TONES = {
+  up: { text: "text-up", dot: "bg-up-dot" },
+  down: { text: "text-down", dot: "bg-down" },
+  flat: { text: "text-muted", dot: "bg-faint" },
+};
+
+// The balance hero, laid out like the Aave app's home: label, big number,
+// and a colored dot line for the change.
 export function PortfolioSummary({ portfolio }: { portfolio: Portfolio }) {
-  const pnlTone = portfolio.pnlCents > 0 ? "text-up" : portfolio.pnlCents < 0 ? "text-down" : "text-muted";
-  // Cents are dimmed so the dollar figure reads first.
-  const [dollars, cents] = formatUsd(portfolio.valueCents).split(".");
+  const tone = TONES[portfolio.pnlCents > 0 ? "up" : portfolio.pnlCents < 0 ? "down" : "flat"];
 
   return (
-    <section aria-labelledby="portfolio-value-label" className="pt-2">
-      <p id="portfolio-value-label" className="font-medium text-muted">
+    <section aria-labelledby="portfolio-value-label" className="pt-3 text-center">
+      <p id="portfolio-value-label" className="text-[0.9375rem] font-medium text-muted">
         Portfolio value
       </p>
-      <p className="mt-1 text-[2.75rem] leading-none font-semibold tracking-tight tabular-nums">
-        {dollars}
-        <span className="text-muted">.{cents}</span>
+      <p className="mt-1.5 text-[3.25rem] leading-[1.05] font-bold tracking-[-0.03em] tabular-nums">
+        <AnimatedUsd cents={portfolio.valueCents} />
       </p>
-      <p className="mt-3 text-lg tabular-nums">
-        <span className={`font-semibold ${pnlTone}`}>
+      <p className="mt-2.5 inline-flex items-center gap-2 text-[0.9375rem] font-semibold tabular-nums">
+        <span aria-hidden className={`size-2.5 rounded-full ${tone.dot}`} />
+        <span className={tone.text}>
           {formatSignedUsd(portfolio.pnlCents)} ({formatPercent(portfolio.pnlPercent)})
         </span>
-        <span className="text-muted"> all time, excluding transfers</span>
       </p>
+      <p className="mt-0.5 text-[0.8125rem] font-medium text-muted">All-time PnL, excluding transfers</p>
     </section>
   );
 }

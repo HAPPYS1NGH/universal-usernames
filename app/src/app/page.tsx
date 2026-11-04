@@ -1,6 +1,6 @@
 import { redirect } from "next/navigation";
 import { AuthPanel } from "@/components/auth-panel";
-import { EthIcon } from "@/components/icons";
+import { EthPriceChip } from "@/components/eth-price-chip";
 import { getSessionUser } from "@/lib/auth/session";
 import { brandName } from "@/lib/config";
 import { getEthPrice } from "@/lib/market/eth-price";
@@ -12,17 +12,13 @@ export default async function LandingPage() {
   const price = await getEthPrice();
 
   return (
-    <div className="flex flex-col gap-8 pt-4">
+    <div className="flex flex-col gap-7 pt-4">
       <section>
-        <p className="mb-5 inline-flex h-9 items-center gap-2 rounded-full bg-surface pr-4 pl-2.5 text-muted">
-          <EthIcon className="size-5 text-ink" />
-          <span className="font-medium text-ink">ETH</span>
-          <span className="tabular-nums text-ink">{formatUsd(price.cents)}</span>
-        </p>
-        <h1 className="text-[2.5rem] leading-[1.05] font-semibold tracking-tight text-balance">
+        <EthPriceChip price={price} />
+        <h1 className="mt-5 text-[2.125rem] leading-[1.08] font-[750] tracking-[-0.04em] text-balance">
           Trade ETH with {formatUsd(STARTING_CASH_CENTS, { wholeDollars: true })} of demo cash.
         </h1>
-        <p className="mt-4 text-lg leading-relaxed text-muted text-pretty">
+        <p className="mt-3 max-w-[34ch] text-[1.0625rem] leading-normal font-medium text-muted text-pretty">
           Pick a username, get a wallet, and climb the {brandName()} leaderboard. Send cash to any trader by their
           @username.
         </p>

@@ -4,12 +4,9 @@ import { useActionState, useState } from "react";
 import { IDLE_FORM_STATE, type FormState } from "@/app/form-state";
 import { sendToUsername } from "@/app/wallet/actions";
 import { formatUsd } from "@/lib/money";
+import { FIELD, FIELD_AFFIX, FIELD_INPUT } from "./control-styles";
 import { FormMessage } from "./form-message";
-import { ArrowUpRightIcon } from "./icons";
 import { SubmitButton } from "./submit-button";
-
-const FIELD_CLASSES =
-  "flex h-14 items-center rounded-xl bg-canvas px-4 ring-1 ring-line transition-shadow duration-150 ease-out focus-within:ring-2 focus-within:ring-ink";
 
 export function SendForm({ cashCents, brand }: { cashCents: number; brand: string }) {
   const [recipient, setRecipient] = useState("");
@@ -24,23 +21,16 @@ export function SendForm({ cashCents, brand }: { cashCents: number; brand: strin
   }, IDLE_FORM_STATE);
 
   return (
-    <section aria-labelledby="send-heading" className="rounded-[1.75rem] bg-surface p-4 ring-1 ring-line">
-      <div className="flex items-center gap-3">
-        <span className="grid size-12 shrink-0 place-items-center rounded-full bg-raised">
-          <ArrowUpRightIcon className="size-6" />
-        </span>
-        <div>
-          <h2 id="send-heading" className="text-xl font-semibold tracking-tight">
-            Send cash
-          </h2>
-          <p className="text-muted">Instant and free between {brand} users.</p>
-        </div>
-      </div>
-      <form action={formAction} className="mt-5 flex flex-col gap-4">
+    <section aria-labelledby="send-heading" className="rounded-card bg-surface p-5 shadow-card">
+      <h2 id="send-heading" className="text-[1.0625rem] font-[650] tracking-[-0.02em]">
+        Send cash
+      </h2>
+      <p className="mt-0.5 text-[0.9375rem] font-medium text-muted">Instant and free between {brand} users.</p>
+      <form action={formAction} className="mt-4 flex flex-col gap-4">
         <label className="flex flex-col gap-2">
-          <span className="font-medium">To</span>
-          <span className={FIELD_CLASSES}>
-            <span className="text-xl text-muted">@</span>
+          <span className="px-1 text-[0.9375rem] font-semibold">To</span>
+          <span className={FIELD}>
+            <span className={FIELD_AFFIX}>@</span>
             <input
               name="recipient"
               required
@@ -50,14 +40,14 @@ export function SendForm({ cashCents, brand }: { cashCents: number; brand: strin
               placeholder="username"
               value={recipient}
               onChange={(event) => setRecipient(event.target.value)}
-              className="h-full w-full bg-transparent pl-1 text-xl outline-none placeholder:text-muted/60"
+              className={FIELD_INPUT}
             />
           </span>
         </label>
         <label className="flex flex-col gap-2">
-          <span className="font-medium">Amount</span>
-          <span className={FIELD_CLASSES}>
-            <span className="text-xl text-muted">$</span>
+          <span className="px-1 text-[0.9375rem] font-semibold">Amount</span>
+          <span className={FIELD}>
+            <span className={FIELD_AFFIX}>$</span>
             <input
               name="amount"
               required
@@ -66,13 +56,13 @@ export function SendForm({ cashCents, brand }: { cashCents: number; brand: strin
               placeholder="0.00"
               value={amount}
               onChange={(event) => setAmount(event.target.value)}
-              className="h-full w-full bg-transparent pl-1.5 text-xl tabular-nums outline-none placeholder:text-muted/60"
+              className={`${FIELD_INPUT} tabular-nums`}
             />
           </span>
         </label>
-        <p className="flex justify-between gap-4">
-          <span className="text-muted">Cash available</span>
-          <span className="font-medium tabular-nums">{formatUsd(cashCents)}</span>
+        <p className="flex justify-between gap-4 px-1 text-[0.9375rem]">
+          <span className="font-medium text-muted">Cash available</span>
+          <span className="font-semibold tabular-nums">{formatUsd(cashCents)}</span>
         </p>
         <FormMessage state={state} />
         <SubmitButton pendingLabel="Sending…">Send</SubmitButton>

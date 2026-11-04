@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { ActivityList } from "@/components/activity-list";
+import { AddressQr } from "@/components/address-qr";
 import { DepositCard } from "@/components/deposit-card";
 import { SendForm } from "@/components/send-form";
 import { requireSessionUser } from "@/lib/auth/session";
@@ -22,8 +23,8 @@ export default async function WalletPage() {
 
   return (
     <div className="flex flex-col gap-6">
-      <h1 className="pt-2 text-3xl font-semibold tracking-tight">Wallet</h1>
-      <DepositCard address={address} />
+      <h1 className="pt-2 text-[2rem] leading-tight font-[750] tracking-[-0.035em]">Wallet</h1>
+      <DepositCard address={address} qr={<AddressQr address={address} />} />
       <SendForm cashCents={portfolio.cashCents} brand={brandName()} />
       <ActivityList entries={getRecentActivity(db, user.id)} />
     </div>

@@ -11,7 +11,7 @@ function describe(entry: ActivityEntry): { title: string; detail: string; amount
       return {
         title: `${buy ? "Bought" : "Sold"} ${formatEth(entry.ethGwei, 6)} ETH`,
         detail: `at ${formatUsd(entry.priceCents)}`,
-        amount: `${buy ? "-" : "+"}${formatUsd(entry.usdCents)}`,
+        amount: `${buy ? "−" : "+"}${formatUsd(entry.usdCents)}`,
         positive: !buy,
       };
     }
@@ -19,7 +19,7 @@ function describe(entry: ActivityEntry): { title: string; detail: string; amount
       return {
         title: `Sent to @${entry.counterparty}`,
         detail: "Transfer",
-        amount: `-${formatUsd(entry.usdCents)}`,
+        amount: `−${formatUsd(entry.usdCents)}`,
         positive: false,
       };
     case "received":
@@ -35,35 +35,33 @@ function describe(entry: ActivityEntry): { title: string; detail: string; amount
 export function ActivityList({ entries }: { entries: ActivityEntry[] }) {
   return (
     <section aria-labelledby="activity-heading">
-      <h2 id="activity-heading" className="text-xl font-semibold tracking-tight">
+      <h2 id="activity-heading" className="mb-2 px-1 text-[0.9375rem] font-medium text-muted">
         Activity
       </h2>
       {entries.length === 0 ? (
-        <p className="mt-3 rounded-[1.75rem] bg-surface p-4 text-muted">
+        <p className="rounded-card bg-surface p-5 text-[0.9375rem] font-medium text-muted shadow-card">
           No activity yet. Trades and transfers show up here.
         </p>
       ) : (
-        <ul className="mt-2">
+        <ul className="divide-y divide-line overflow-hidden rounded-card bg-surface shadow-card">
           {entries.map((entry) => {
             const { title, detail, amount, positive } = describe(entry);
             return (
-              <li key={entry.id} className="flex items-center gap-3 py-3">
+              <li key={entry.id} className="flex min-h-16 items-center gap-3 px-4 py-2.5">
                 {entry.kind === "trade" ? (
-                  <span className="grid size-11 shrink-0 place-items-center rounded-full bg-surface">
+                  <span className="grid size-10 shrink-0 place-items-center rounded-full bg-fill">
                     <EthIcon className="size-6" />
                   </span>
                 ) : (
                   <UserAvatar username={entry.counterparty} />
                 )}
                 <div className="min-w-0 flex-1">
-                  <p className="font-semibold [overflow-wrap:anywhere]">{title}</p>
-                  <p className="text-muted">
+                  <p className="font-semibold tracking-[-0.01em] [overflow-wrap:anywhere]">{title}</p>
+                  <p className="text-[0.8125rem] font-medium text-muted">
                     {detail} · {formatTimeAgo(entry.at)}
                   </p>
                 </div>
-                <p className={`shrink-0 text-lg font-semibold tabular-nums ${positive ? "text-up" : "text-ink"}`}>
-                  {amount}
-                </p>
+                <p className={`shrink-0 font-bold tabular-nums ${positive ? "text-up" : "text-ink"}`}>{amount}</p>
               </li>
             );
           })}

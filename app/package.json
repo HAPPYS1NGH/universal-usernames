@@ -14,10 +14,12 @@
     "wallet:sweep": "tsx --env-file-if-exists=.env scripts/wallet-sweep.ts"
   },
   "dependencies": {
+    "@number-flow/react": "0.6.2",
     "better-sqlite3": "13.0.3",
     "next": "16.3.5",
     "react": "19.3.0",
     "react-dom": "19.3.0",
+    "uqr": "0.1.3",
     "viem": "2.56.8"
   },
   "devDependencies": {

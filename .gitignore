@@ -25,7 +25,8 @@ data/
 # foundry
 contracts/cache/
 contracts/out/
-contracts/broadcast/*/31337/
+# forge script logs on every chain, dry runs included: each reader deploys their own resolver.
+contracts/broadcast/
 contracts/lib/
 contracts/dependencies/
 

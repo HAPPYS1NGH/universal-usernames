@@ -1,5 +1,6 @@
-// The app's icon set: 24px grid, 2px rounded strokes, currentColor. Icons are
-// always decorative here; the control or text next to them carries the name.
+// The app's icon set: 24px grid, 1.75px rounded strokes (close to the Aave
+// app's iOS weight), currentColor. Icons are always decorative here; the
+// control or text next to them carries the name.
 
 type IconProps = { className?: string };
 
@@ -10,7 +11,7 @@ function StrokeIcon({ className = "size-6", children }: IconProps & { children: 
       viewBox="0 0 24 24"
       fill="none"
       stroke="currentColor"
-      strokeWidth={2}
+      strokeWidth={1.75}
       strokeLinecap="round"
       strokeLinejoin="round"
       className={`shrink-0 ${className}`}

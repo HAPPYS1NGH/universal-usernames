@@ -1,8 +1,8 @@
 import { createHash } from "node:crypto";
 
 const SIZES = {
-  sm: "size-9 text-sm",
-  md: "size-11 text-base",
+  sm: "size-10 text-[1.0625rem]",
+  md: "size-10 text-[1.0625rem]",
 };
 
 // Deterministic avatar: a two-color gradient picked from a hash of the

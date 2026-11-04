@@ -10,16 +10,17 @@ const TABS = [
   { href: "/leaderboard", label: "Leaderboard", Icon: TrophyIcon },
 ];
 
-// Bottom tab bar for signed-in users, pinned to the app column.
+// Floating tab bar for signed-in users: a white pill docked above the home
+// indicator, inside the app column.
 export function TabBar() {
   const pathname = usePathname();
 
   return (
     <nav
       aria-label="Main"
-      className="fixed inset-x-0 bottom-0 z-20 mx-auto w-full max-w-app border-t border-line bg-canvas/85 pb-[env(safe-area-inset-bottom)] backdrop-blur-lg sm:border-x"
+      className="pointer-events-none fixed inset-x-0 bottom-0 z-20 mx-auto w-full max-w-app px-5 pb-[calc(0.75rem_+_env(safe-area-inset-bottom))]"
     >
-      <ul className="grid grid-cols-3">
+      <ul className="pointer-events-auto grid grid-cols-3 rounded-full bg-surface/95 p-1.5 shadow-dock backdrop-blur-lg">
         {TABS.map(({ href, label, Icon }) => {
           const active = pathname === href;
           return (
@@ -27,11 +28,11 @@ export function TabBar() {
               <Link
                 href={href}
                 aria-current={active ? "page" : undefined}
-                className={`flex h-16 flex-col items-center justify-center gap-1 text-[0.8125rem] font-medium transition-colors duration-150 ease-out active:opacity-70 ${
-                  active ? "text-ink" : "text-muted hover:text-ink"
+                className={`flex h-14 flex-col items-center justify-center gap-0.5 rounded-full text-[0.75rem] font-semibold tracking-[-0.005em] transition-[background-color,color,scale] duration-150 ease-ios active:scale-[0.96] ${
+                  active ? "bg-fill text-ink" : "text-muted hover:text-ink"
                 }`}
               >
-                <Icon className="size-6" />
+                <Icon className="size-[1.375rem]" />
                 {label}
               </Link>
             </li>
@@ -49,7 +50,7 @@ export function GuestNavLink() {
   return (
     <Link
       href={onLeaderboard ? "/" : "/leaderboard"}
-      className="flex h-11 items-center rounded-full bg-surface px-4 font-medium transition-colors duration-150 ease-out hover:bg-raised"
+      className="flex h-11 items-center rounded-full bg-surface px-4 text-[0.9375rem] font-[650] tracking-[-0.02em] shadow-raised transition-[scale] duration-150 ease-ios active:scale-[0.96]"
     >
       {onLeaderboard ? "Sign in" : "Leaderboard"}
     </Link>

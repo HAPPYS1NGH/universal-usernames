@@ -8,7 +8,7 @@ export function FormMessage({ state }: { state: FormState }) {
   return (
     <p
       role={isError ? "alert" : "status"}
-      className={`flex items-start gap-2.5 rounded-xl px-4 py-3 font-medium text-pretty ${isError ? "bg-down-soft text-down" : "bg-up-soft text-up"}`}
+      className={`flex items-start gap-2.5 rounded-2xl px-4 py-3 text-[0.9375rem] font-semibold text-pretty ${isError ? "bg-down-soft text-down" : "bg-up-soft text-up"}`}
     >
       <Icon className="mt-px size-5" />
       {state.message}

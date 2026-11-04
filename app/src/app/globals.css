@@ -1,23 +1,48 @@
 @import "tailwindcss";
 
 @theme {
-  --font-sans: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
-  --font-mono: var(--font-geist-mono), ui-monospace, monospace;
+  /* System type, like the Aave app: SF Pro on Apple devices, the platform
+     sans everywhere else. Weights 650 and 750 exist in SF Pro's variable axis. */
+  --font-sans: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --font-mono: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
 
-  /* Dark, mobile-wallet palette. Token names describe roles, so components
-     never reference raw colors. Surfaces step up in lightness as they layer. */
-  --color-backdrop: oklch(0.12 0.004 275);
-  --color-canvas: oklch(0.165 0.005 275);
-  --color-surface: oklch(0.225 0.006 275);
-  --color-raised: oklch(0.28 0.007 275);
-  --color-line: oklch(0.33 0.008 275);
-  --color-ink: oklch(0.97 0.002 275);
-  --color-muted: oklch(0.72 0.012 275);
-  --color-up: oklch(0.8 0.19 152);
-  --color-up-soft: oklch(0.3 0.07 152);
-  --color-down: oklch(0.7 0.19 25);
-  --color-down-soft: oklch(0.3 0.08 25);
-  --color-warn: oklch(0.82 0.15 80);
+  /* Light, cream palette after the Aave app. Token names describe roles, so
+     components never reference raw colors. White surfaces sit on a cream
+     ground; neutrals carry the ground's warm hue so grays don't read blue.
+     Every text pair below clears 4.5:1. */
+  --color-canvas: oklch(0.971 0.007 85); /* cream ground, #f8f5f0 (Aave: #f7f6f6) */
+  --color-surface: oklch(1 0 0);
+  --color-fill: oklch(0.955 0.006 85); /* controls on white: tracks, chips, fields */
+  --color-fill-strong: oklch(0.925 0.008 85); /* pressed or hovered fill */
+  --color-line: oklch(0.25 0.01 85 / 0.1);
+  --color-ink: oklch(0.23 0.004 80);
+  --color-muted: oklch(0.52 0.006 80);
+  --color-faint: oklch(0.66 0.006 80); /* placeholders and chevrons, never body text */
+  --color-accent: oklch(0.56 0.18 283); /* Aave's purple, deep enough for white labels */
+  --color-accent-soft: oklch(0.925 0.032 291);
+  --color-accent-ink: oklch(0.42 0.16 283);
+  --color-lavender: oklch(0.72 0.149 282); /* Aave #9897ff, decoration only */
+  --color-up: oklch(0.51 0.14 152);
+  --color-up-dot: oklch(0.78 0.19 150);
+  --color-up-soft: oklch(0.955 0.04 158);
+  --color-down: oklch(0.53 0.19 27);
+  --color-down-soft: oklch(0.95 0.03 25);
+  --color-warn: oklch(0.75 0.15 75);
+
+  /* Hairline ring plus a tight shadow, so white cards lift off the cream
+     without a drawn border. */
+  --shadow-card: 0 0 0 1px oklch(0 0 0 / 0.04), 0 1px 2px oklch(0 0 0 / 0.04);
+  --shadow-raised:
+    0 0 0 1px oklch(0 0 0 / 0.05), 0 1px 3px oklch(0 0 0 / 0.06), 0 6px 16px -6px oklch(0 0 0 / 0.08);
+  --shadow-dock:
+    0 0 0 1px oklch(0 0 0 / 0.05), 0 2px 6px oklch(0 0 0 / 0.05), 0 12px 32px -8px oklch(0 0 0 / 0.14);
+  --shadow-sheet: 0 -8px 30px oklch(0 0 0 / 0.08);
+
+  --radius-card: 1.375rem;
+  --radius-sheet: 1.75rem;
+
+  /* iOS sheet curve from the Aave app: fast start, long settle. */
+  --ease-ios: cubic-bezier(0.32, 0.72, 0, 1);
 
   /* Width of the phone-sized app column. In rem, so it grows with the root
      size on large screens (see html below). */
@@ -26,10 +51,11 @@
 
 html {
   font-size: 16px;
-  color-scheme: dark;
-  background: var(--color-backdrop);
+  color-scheme: light;
+  background: var(--color-canvas);
   color: var(--color-ink);
   font-synthesis: none;
+  font-optical-sizing: auto;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   -webkit-text-size-adjust: 100%;
@@ -45,10 +71,10 @@ html {
   }
 }
 
-/* `html body` outranks the plain `body` rule that Next's built-in 404 and
-   error pages inject (black text in light mode), so no page goes black-on-dark. */
+/* `html body` outranks the plain `body` rule that Next's built-in error pages
+   inject, so no page loses the cream ground. */
 html body {
-  background: var(--color-backdrop);
+  background: var(--color-canvas);
   color: var(--color-ink);
 }
 
@@ -75,17 +101,20 @@ html body {
     outline-offset: 2px;
   }
 
-  /* Keep autofilled fields on the dark theme instead of the browser's light
-     fill. Fields sit on the canvas color inside their wrappers. */
+  input::placeholder {
+    color: var(--color-faint);
+  }
+
+  /* Keep autofilled fields on the field fill instead of the browser's yellow. */
   input:-webkit-autofill {
     -webkit-text-fill-color: var(--color-ink);
     caret-color: var(--color-ink);
-    box-shadow: 0 0 0 100vmax var(--color-canvas) inset;
+    box-shadow: 0 0 0 100vmax var(--color-fill) inset;
   }
 }
 
 ::selection {
-  background: oklch(0.97 0.002 275 / 0.25);
+  background: oklch(0.23 0.004 80 / 0.14);
 }
 
 @keyframes countdown {

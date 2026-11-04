@@ -3,6 +3,7 @@ import { signOut } from "@/app/auth-actions";
 import type { SessionUser } from "@/lib/auth/session";
 import { brandName } from "@/lib/config";
 import { BrandMark } from "./brand-mark";
+import { ICON_BUTTON } from "./control-styles";
 import { SignOutIcon } from "./icons";
 import { GuestNavLink } from "./nav-links";
 import { UserAvatar } from "./user-avatar";
@@ -14,22 +15,22 @@ export function SiteHeader({ user }: { user: SessionUser | null }) {
 
   return (
     <header className="sticky top-0 z-20 bg-canvas/85 pt-[env(safe-area-inset-top)] backdrop-blur-lg">
-      <div className="flex h-16 items-center justify-between gap-4 px-4">
+      <div className="flex h-[4.25rem] items-center justify-between gap-4 px-5">
         {user ? (
           <Link
             href="/trade"
-            className="-mx-1 flex min-w-0 items-center gap-3 rounded-full p-1 pr-4 transition-colors duration-150 ease-out hover:bg-surface"
+            className="-ml-1 flex min-w-0 items-center gap-3 rounded-full p-1 pr-3 transition-colors duration-150 ease-out hover:bg-fill"
           >
             <UserAvatar username={user.username} size="sm" />
             <span className="min-w-0 leading-tight">
-              <span className="block truncate text-lg font-semibold">@{user.username}</span>
-              <span className="block text-sm text-muted">{brand}</span>
+              <span className="block truncate text-[1.0625rem] font-[650] tracking-[-0.02em]">@{user.username}</span>
+              <span className="block text-[0.8125rem] font-medium text-muted">{brand}</span>
             </span>
           </Link>
         ) : (
           <Link
             href="/"
-            className="-mx-1 flex items-center gap-2.5 rounded-full p-1 pr-4 text-lg font-semibold tracking-tight transition-colors duration-150 ease-out hover:bg-surface"
+            className="-ml-1 flex items-center gap-2.5 rounded-full p-1 pr-3 text-[1.0625rem] font-[650] tracking-[-0.02em] transition-colors duration-150 ease-out hover:bg-fill"
           >
             <BrandMark brand={brand} />
             {brand}
@@ -37,13 +38,8 @@ export function SiteHeader({ user }: { user: SessionUser | null }) {
         )}
         {user ? (
           <form action={signOut}>
-            <button
-              type="submit"
-              aria-label="Sign out"
-              title="Sign out"
-              className="-mr-1.5 grid size-11 place-items-center rounded-full text-muted transition-[color,background-color,transform] duration-150 ease-out hover:bg-surface hover:text-ink active:scale-[0.96]"
-            >
-              <SignOutIcon className="size-[1.375rem]" />
+            <button type="submit" aria-label="Sign out" title="Sign out" className={`${ICON_BUTTON} hover:text-muted`}>
+              <SignOutIcon className="size-5" />
             </button>
           </form>
         ) : (

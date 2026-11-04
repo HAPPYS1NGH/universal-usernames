@@ -92,7 +92,7 @@ export function DepositCard({ address, ensName, qr }: DepositCardProps) {
         </h2>
         <p className="mt-0.5 text-[0.9375rem] font-medium text-muted text-balance">
           {ensName
-            ? "Send ETH from any ENS-aware wallet to this name."
+            ? "Send ETH from any ENS\u2011aware wallet to this name."
             : "Send ETH on Ethereum mainnet to this address."}
         </p>
         {ensName && (
@@ -106,7 +106,9 @@ export function DepositCard({ address, ensName, qr }: DepositCardProps) {
             <div className="mt-2.5 grid w-full">
               <CopyButton value={ensName} label="Copy name" />
             </div>
-            <p className="mt-6 text-[0.9375rem] font-medium text-muted">Or send on Ethereum mainnet to the address</p>
+            <p className="mt-6 text-[0.9375rem] font-medium text-muted text-balance">
+              Or send on Ethereum mainnet to the address
+            </p>
           </>
         )}
         <div className={ensName ? "mt-4" : "mt-5"}>{qr}</div>

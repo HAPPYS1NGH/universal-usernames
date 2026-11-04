@@ -124,7 +124,7 @@ export function DepositCard({ address, qr }: DepositCardProps) {
             +{formatWeiAsEth(recentDeposit.wei)} ETH received
           </p>
         )}
-        <p className="mt-2 flex items-center gap-2 text-[0.8125rem] font-medium text-muted" aria-live="polite">
+        <p className="mt-2 flex items-center gap-2 text-[0.8125rem] font-medium text-muted tabular-nums" aria-live="polite">
           <span className={`size-2 rounded-full ${balance.failed ? "bg-warn" : "animate-pulse bg-up-dot"}`} />
           {checking
             ? "Checking Ethereum…"

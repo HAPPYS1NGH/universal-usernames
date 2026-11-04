@@ -48,6 +48,7 @@ export function AvatarPicker({ username, current, generated, children }: AvatarP
   const cameraRef = useRef<HTMLInputElement>(null);
   const libraryRef = useRef<HTMLInputElement>(null);
   const searchRef = useRef<HTMLInputElement>(null);
+  const stepRef = useRef<HTMLDivElement>(null);
 
   // Each preview URL is released once it's replaced or the picker unmounts.
   useEffect(() => {
@@ -55,11 +56,17 @@ export function AvatarPicker({ username, current, generated, children }: AvatarP
     return () => URL.revokeObjectURL(photo.src);
   }, [photo]);
 
-  // A precise pointer gets the search box focused; on phones the keyboard
-  // would cover half the grid.
+  // Each step replaces the last, so the focused button unmounts with it. Move
+  // focus into the new step: the search box with a precise pointer (on phones
+  // the keyboard would cover half the grid), otherwise its first button.
   useEffect(() => {
-    if (step === "browse" && window.matchMedia("(pointer: fine)").matches) searchRef.current?.focus();
-  }, [step]);
+    if (!open || move === undefined) return;
+    if (step === "browse" && window.matchMedia("(pointer: fine)").matches) {
+      searchRef.current?.focus();
+      return;
+    }
+    stepRef.current?.querySelector<HTMLElement>("button:not(:disabled)")?.focus();
+  }, [open, step, move]);
 
   function go(next: Step) {
     setMove(DEPTH[next] < DEPTH[step] ? "back" : "forward");
@@ -126,13 +133,14 @@ export function AvatarPicker({ username, current, generated, children }: AvatarP
         onClick={openPicker}
         aria-label="Change your avatar"
         aria-haspopup="dialog"
-        className="shrink-0 rounded-full transition-[scale] duration-150 ease-ios active:scale-[0.96]"
+        className="relative shrink-0 rounded-full transition-[scale] duration-150 ease-ios before:absolute before:-inset-1 before:rounded-full active:scale-[0.96]"
       >
         {children}
       </button>
 
       <BottomSheet open={open} onClose={() => setOpen(false)} label={TITLES[step]}>
         <div
+          ref={stepRef}
           key={step}
           data-move={move}
           className={`flex min-h-0 flex-col data-[move=back]:animate-[step-back_220ms_var(--ease-ios)] data-[move=forward]:animate-[step-forward_280ms_var(--ease-ios)] ${
@@ -190,7 +198,7 @@ export function AvatarPicker({ username, current, generated, children }: AvatarP
                     type="button"
                     aria-label="Choose an emoji"
                     onClick={() => go("browse")}
-                    className="absolute -right-0.5 -bottom-0.5 grid size-10 place-items-center rounded-full bg-surface shadow-raised transition-[scale] duration-150 ease-ios active:scale-[0.96]"
+                    className="absolute -right-0.5 -bottom-0.5 grid size-10 place-items-center rounded-full bg-surface shadow-raised transition-[scale] duration-150 ease-ios before:absolute before:-inset-1 before:rounded-full active:scale-[0.96]"
                   >
                     <PencilIcon className="size-[1.125rem]" />
                   </button>
@@ -271,7 +279,7 @@ export function AvatarPicker({ username, current, generated, children }: AvatarP
                           setEmoji((previous) => ({ ...previous, emoji: item.char }));
                           go("emoji");
                         }}
-                        className="grid aspect-square place-items-center rounded-xl text-[1.625rem] leading-none transition-[background-color,scale] duration-150 ease-ios hover:bg-fill active:scale-[0.9] aria-pressed:bg-fill"
+                        className="grid aspect-square place-items-center rounded-xl text-[1.625rem] leading-none transition-[background-color,scale] duration-150 ease-ios hover:bg-fill active:scale-[0.96] aria-pressed:bg-fill"
                       >
                         {item.char}
                       </button>

@@ -18,7 +18,7 @@ type TradePanelProps = {
 const QUICK_AMOUNTS_CENTS = [100_00, 500_00, 1_000_00];
 
 const CHIP =
-  "h-10 rounded-full text-[0.9375rem] font-semibold tabular-nums transition-[background-color,color,scale] duration-150 ease-ios active:scale-[0.96]";
+  "h-11 rounded-full text-[0.9375rem] font-semibold tabular-nums transition-[background-color,color,scale] duration-150 ease-ios active:scale-[0.96]";
 
 export function TradePanel({ cashCents, ethGwei, priceCents }: TradePanelProps) {
   const [side, setSide] = useState<TradeSide>("buy");

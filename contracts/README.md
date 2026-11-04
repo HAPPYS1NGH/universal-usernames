@@ -15,17 +15,13 @@ forge test
 
 `test/GatewayFixture.t.sol` checks answers produced by the real gateway code. If you change how the gateway encodes or signs, regenerate the fixture with `pnpm --filter gateway fixture`.
 
-## Deploy
+`test/ParentSetup.t.sol` tests how the deploy script sets the parent's resolver, with the ENS contracts mocked. Its fork tests repeat the checks against the mainnet contracts when `MAINNET_RPC_URL` is set, and are skipped otherwise.
+
+## Deploy and set the parent's resolver
 
 You need the gateway running on an HTTPS host first (see [`../gateway`](../gateway)), and the address of its signer key.
 
-1. Import the key that will deploy and own the resolver into a Foundry keystore. It never goes in an env file.
-
-   ```sh
-   cast wallet import deployer --interactive
-   ```
-
-2. Fill in `contracts/.env`. Foundry loads it automatically.
+1. Fill in `contracts/.env`. Foundry loads it automatically.
 
    ```sh
    cp .env.example .env
@@ -36,40 +32,62 @@ You need the gateway running on an HTTPS host first (see [`../gateway`](../gatew
    | `GATEWAY_URL` | `https://<gateway host>/{sender}/{data}.json`, placeholders included |
    | `SIGNER_ADDRESS` | Address of the gateway's `SIGNER_PRIVATE_KEY` |
    | `MAINNET_RPC_URL` | Your mainnet RPC |
+   | `PARENT_NAME` | The name to set the resolver on, e.g. `tradepit.eth`. Empty: deploy only |
    | `ETHERSCAN_API_KEY` | Only for `--verify` |
 
-3. Simulate on a mainnet fork. Nothing is sent, and the owner it prints is Foundry's default sender.
+2. Simulate on a mainnet fork. Nothing is sent. Pass the address that owns `PARENT_NAME` as `--sender`, or the checks run against Foundry's default sender and fail.
 
    ```sh
-   forge script script/Deploy.s.sol --rpc-url mainnet
+   forge script script/Deploy.s.sol --rpc-url mainnet --sender <owner address>
    ```
 
-4. Deploy. Add `--verify` to verify the source on Etherscan in the same step.
+3. Deploy and set the resolver. Add `--verify` to verify the source on Etherscan in the same step.
 
    ```sh
-   forge script script/Deploy.s.sol --rpc-url mainnet --account deployer --broadcast
+   forge script script/Deploy.s.sol --rpc-url mainnet --broadcast --browser --slow
    ```
 
-   To verify later instead:
+   `--browser` needs Foundry 1.7 or later (`foundryup`). Forge serves a page on `localhost:9545` and opens it. `--browser-port` changes the port. Connect MetaMask there, on Ethereum mainnet, with the account that owns `PARENT_NAME`, then click **Confirm Connection**. Forge runs the script as that account, so you don't pass `--sender`.
+
+   Each transaction then shows up on the page. Click **Sign & Send** and confirm it in MetaMask, first the deploy, then `setResolver`. The second one points the name at the address the first one creates, so `--slow` waits for each transaction to confirm before it sends the next. Foundry 1.8.4 and later do that for browser wallets anyway.
+
+   To sign with a Foundry keystore instead, run `cast wallet import name-owner --interactive` and replace `--browser --slow` with `--account name-owner`.
+
+   To verify later:
 
    ```sh
    forge verify-contract $RESOLVER src/OffchainResolver.sol:OffchainResolver --chain mainnet --watch \
      --constructor-args $(cast abi-encode "constructor(string,address[])" "$GATEWAY_URL" "[$SIGNER_ADDRESS]")
    ```
 
-The script prints the resolver address. Use it as `$RESOLVER` below.
+The script prints the resolver address, which is `$RESOLVER` below, and the contract it set it on:
 
-## Set the resolver on the parent name
+```text
+OffchainResolver: 0x…
+Owner:            0x926a…   the account that signed
+Signer:           0x…
+Gateway URL:      https://…/{sender}/{data}.json
+Parent name:      tradepit.eth
+Resolver set on:  ENSv2 ETHRegistry
+```
 
-Which contract you call depends on where the parent name lives. This read-only script checks and prints the exact command:
+### How the script finds the parent's registry
+
+`script/ParentSetup.sol` is `pnpm parent-setup` in Solidity. It reads `getStatus(labelhash)` on the ENSv2 ETHRegistry: 2 means the name is registered in ENSv2, 1 means it's reserved because it hasn't migrated. For an ENSv1 name, the ENS Registry owner tells wrapped from unwrapped names. Before it calls `setResolver`, it checks that the signing account is allowed to: `ROLE_SET_RESOLVER` in ENSv2, owner or approved operator in ENSv1. Forge runs the whole script before it sends anything, so a failed check sends nothing:
+
+```text
+Error: script failed: 0x…bEEF can't set the resolver of tradepit.eth: it lacks ROLE_SET_RESOLVER in the ENSv2 ETHRegistry. Sign with the owner, 0x926a…
+```
+
+## Set the resolver from another wallet
+
+If the deploying account doesn't own the parent name, deploy with `PARENT_NAME` empty and send `setResolver` from the owner's wallet. This read-only script works out which contract to call and prints the command:
 
 ```sh
 MAINNET_RPC_URL=<rpc> pnpm --filter gateway parent-setup tradepit.eth $RESOLVER
 ```
 
-It reads `getStatus(labelhash)` on the ENSv2 ETHRegistry (2 = registered in ENSv2, 1 = reserved, so the name hasn't migrated), then the ENSv1 registry owner to tell wrapped from unwrapped names.
-
-Send the command from the wallet that owns the name. The commands below use a keystore account called `name-owner`: import it with `cast wallet import name-owner --interactive`, or use `deployer` if that key owns the name.
+The commands below and the one it prints use a keystore account called `name-owner` (`cast wallet import name-owner --interactive`). To sign in MetaMask, replace `--account name-owner` with `--browser`.
 
 ### In the ENS app
 
@@ -104,12 +122,12 @@ cast send 0xf60aba43E1f7F3DAB1186Ff03B561401C9Df85E2 "setResolver(uint256,addres
 
 For a parent that is itself a subname in ENSv2, call the same function on the registry that holds it, the subregistry of its parent.
 
-### After migrating to ENSv2
+## After migrating to ENSv2
 
 > [!WARNING]
 > Migrating a name to ENSv2 clears its ENSv1 resolver. If you migrate `tradepit.eth` after this setup, pass `$RESOLVER` as the resolver in the migration data, or run the ENSv2 command right after. Until you do, no username resolves.
 
-### Why it works on ENSv1 and ENSv2
+## Why it works on ENSv1 and ENSv2
 
 The Universal Resolver uses the resolver set on the longest matching suffix of the name. A resolver found on a parent must support `IExtendedResolver` (ERC-165 id `0x9061b923`), and this one does. For names that haven't migrated, ENSv2 hands resolution to `ENSV1Resolver`, which calls the resolver set in ENSv1.
 
@@ -138,13 +156,13 @@ A username nobody has signed up with prints `(none)`. If the lookup itself fails
 
 ## Move the gateway or rotate the signer
 
-The deployer owns the resolver, so these are sent from `deployer`.
+The account that signed the deploy owns the resolver, so send these from it. They sign in MetaMask with `--browser`. With a keystore, use `--account name-owner` instead.
 
 Move the gateway to a new host. Keep the old host up until the transaction confirms.
 
 ```sh
 cast send $RESOLVER "setUrl(string)" "https://new-host.example/{sender}/{data}.json" \
-  --rpc-url $MAINNET_RPC_URL --account deployer
+  --rpc-url $MAINNET_RPC_URL --browser
 ```
 
 Rotate the signer key without downtime:
@@ -152,10 +170,10 @@ Rotate the signer key without downtime:
 ```sh
 cast wallet new                                   # new SIGNER_PRIVATE_KEY and address
 cast send $RESOLVER "setSigners(address[],bool)" "[$NEW_SIGNER]" true \
-  --rpc-url $MAINNET_RPC_URL --account deployer
+  --rpc-url $MAINNET_RPC_URL --browser
 # restart the gateway with the new SIGNER_PRIVATE_KEY, then:
 cast send $RESOLVER "setSigners(address[],bool)" "[$OLD_SIGNER]" false \
-  --rpc-url $MAINNET_RPC_URL --account deployer
+  --rpc-url $MAINNET_RPC_URL --browser
 ```
 
 If a signer key leaks, run only the last command, right away. Answers signed with that key stop verifying as soon as it confirms.

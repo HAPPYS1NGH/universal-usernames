@@ -62,7 +62,7 @@ Run these from the repository root, after `corepack enable`. `cast` comes with [
 Put the private key in `SIGNER_PRIVATE_KEY`. Keep the address: you pass it to the resolver when you deploy it.
 
 > [!WARNING]
-> The signer key is not the deployer or owner key. It lives on the gateway host and only signs answers. If it leaks, someone can forge records for your names until you remove it from the resolver with `setSigners`. Keep the owner key in a Foundry keystore, never on the gateway host.
+> The signer key is not the deployer or owner key. It lives on the gateway host and only signs answers. If it leaks, someone can forge records for your names until you remove it from the resolver with `setSigners`. Keep the owner key in your wallet or a Foundry keystore, never on the gateway host.
 
 | Variable | Required | Default | Description |
 | --- | --- | --- | --- |

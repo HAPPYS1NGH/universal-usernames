@@ -22,9 +22,10 @@ Inside the app you can send cash to `@happy`. Outside it, the name means nothing
 
 ### Prerequisites
 
-- Node.js 22 or newer
-- pnpm through Corepack (ships with Node)
+- Node.js 22.18 or newer, the `engines` range in `package.json`
+- pnpm through Corepack, which ships with Node. Run `corepack enable` once, because the root scripts call `pnpm` directly.
 - OpenSSL, to generate the encryption key
+- [Foundry](https://getfoundry.sh) (`cast` and `forge`), from step 02 onward
 
 ### Setup
 

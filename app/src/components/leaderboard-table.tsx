@@ -34,8 +34,10 @@ export function LeaderboardTable({ entries, currentUsername, avatars }: Leaderbo
               {entry.rank}
             </span>
             <UserAvatar username={entry.username} avatar={avatars.get(entry.username) ?? null} />
-            <div className="min-w-0 flex-1">
-              <p className="flex flex-wrap items-center gap-x-2 text-[1.0625rem] font-semibold tracking-[-0.02em]">
+            {/* The username spans both lines, centered beside value over PnL. PnL gets a track of its
+                own, so a second line on the left only has to clear the short PnL figure. */}
+            <div className="grid min-w-0 flex-1 grid-cols-[minmax(0,1fr)_auto_auto] items-baseline gap-x-3">
+              <p className="row-span-2 flex min-w-0 flex-wrap items-center gap-x-2 self-center text-[1.0625rem] font-semibold tracking-[-0.02em]">
                 {/* The link's ::after covers the row, so the whole row opens the profile. */}
                 <Link
                   href={`/u/${entry.username}`}
@@ -49,13 +51,11 @@ export function LeaderboardTable({ entries, currentUsername, avatars }: Leaderbo
                   </span>
                 )}
               </p>
-            </div>
-            <div className="shrink-0 text-right tabular-nums">
-              <p className="text-[1.0625rem] font-semibold">
+              <p className="col-span-2 text-right text-[1.0625rem] font-semibold tabular-nums">
                 <span className="sr-only">Portfolio value </span>
                 {formatUsd(entry.valueCents)}
               </p>
-              <p className={`text-[0.875rem] font-semibold ${pnlToneClass(entry.pnlPercent)}`}>
+              <p className={`col-start-3 text-right text-[0.875rem] font-semibold tabular-nums ${pnlToneClass(entry.pnlPercent)}`}>
                 <span className="sr-only">PnL </span>
                 {formatPercent(entry.pnlPercent)}
               </p>

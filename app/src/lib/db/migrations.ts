@@ -50,6 +50,23 @@ const MIGRATIONS: readonly string[] = [
   CREATE INDEX transfers_from_created ON transfers(from_user_id, created_at);
   CREATE INDEX transfers_to_created ON transfers(to_user_id, created_at);
   `,
+  // Avatars a user picked. No row means the generated default. Photos live in
+  // the database, so they persist on the same volume and need no file store.
+  `
+  CREATE TABLE avatars (
+    user_id INTEGER PRIMARY KEY REFERENCES users(id) ON DELETE CASCADE,
+    kind TEXT NOT NULL CHECK (kind IN ('emoji', 'photo')),
+    emoji TEXT,
+    color TEXT,
+    photo BLOB,
+    photo_type TEXT,
+    updated_at INTEGER NOT NULL,
+    CHECK (
+      (kind = 'emoji' AND emoji IS NOT NULL AND color IS NOT NULL AND photo IS NULL AND photo_type IS NULL) OR
+      (kind = 'photo' AND photo IS NOT NULL AND photo_type IS NOT NULL AND emoji IS NULL AND color IS NULL)
+    )
+  );
+  `,
 ];
 
 export function migrate(db: Db): void {

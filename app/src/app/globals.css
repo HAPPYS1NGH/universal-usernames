@@ -28,6 +28,7 @@ html {
   font-size: 16px;
   color-scheme: dark;
   background: var(--color-backdrop);
+  color: var(--color-ink);
   font-synthesis: none;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
@@ -44,7 +45,9 @@ html {
   }
 }
 
-body {
+/* `html body` outranks the plain `body` rule that Next's built-in 404 and
+   error pages inject (black text in light mode), so no page goes black-on-dark. */
+html body {
   background: var(--color-backdrop);
   color: var(--color-ink);
 }

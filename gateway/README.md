@@ -80,11 +80,11 @@ corepack pnpm --filter gateway dev
 
 ## Try it
 
-With the app running at `APP_API_URL`, build the calldata the resolver would send for `addr(happy.tradepit.eth)`. The name is DNS-encoded: each label is prefixed by its length and the name ends with a zero byte.
+With the app running at `APP_API_URL` and seeded by `pnpm db:seed`, build the calldata the resolver would send for `addr(nora.tradepit.eth)`. `nora` is one of the demo traders. The name is DNS-encoded: each label is prefixed by its length and the name ends with a zero byte.
 
 ```sh
-NAME=happy.tradepit.eth
-DNS_NAME=0x$(printf '\005happy\010tradepit\003eth\000' | od -An -tx1 | tr -d ' \n')
+NAME=nora.tradepit.eth
+DNS_NAME=0x$(printf '\004nora\010tradepit\003eth\000' | od -An -tx1 | tr -d ' \n')
 CALL=$(cast calldata "resolve(bytes,bytes)" $DNS_NAME $(cast calldata "addr(bytes32)" $(cast namehash $NAME)))
 RESOLVER=0x5615deb798bb3e4dfa0139dfa1b3d433cc23b72f   # any address works locally
 
@@ -107,7 +107,7 @@ cast abi-decode "f()(bytes,uint64,bytes)" <data>
 0xf405b76842651144bf6ffb2f3c36fb977c91038f8ede38be3927ace5b4ebdf53…1b
 ```
 
-The result is `abi.encode(address)`, exactly what `addr(bytes32)` returns onchain.
+The result is `abi.encode(address)`, exactly what `addr(bytes32)` returns onchain. It holds nora's embedded wallet, so your address will differ. A username nobody has signed up with gets the zero address.
 
 ## Test
 

@@ -173,11 +173,11 @@ pnpm dev:gateway       # gateway on http://localhost:8080
 
 ### Try it
 
-Build the calldata a resolver would send for `addr(happy.tradepit.eth)` and ask the gateway:
+Build the calldata a resolver would send for `addr(nora.tradepit.eth)` and ask the gateway. `nora` is one of the traders `pnpm db:seed` created:
 
 ```sh
-DNS_NAME=0x$(printf '\005happy\010tradepit\003eth\000' | od -An -tx1 | tr -d ' \n')
-CALL=$(cast calldata "resolve(bytes,bytes)" $DNS_NAME $(cast calldata "addr(bytes32)" $(cast namehash happy.tradepit.eth)))
+DNS_NAME=0x$(printf '\004nora\010tradepit\003eth\000' | od -An -tx1 | tr -d ' \n')
+CALL=$(cast calldata "resolve(bytes,bytes)" $DNS_NAME $(cast calldata "addr(bytes32)" $(cast namehash nora.tradepit.eth)))
 curl -s http://localhost:8080/0x5615deb798bb3e4dfa0139dfa1b3d433cc23b72f/$CALL.json
 ```
 
